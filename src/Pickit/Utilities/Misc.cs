@@ -16,7 +16,7 @@ namespace AimBot.Utilities
         public static int EntityDistance(Entity entity)
         {
             var object_ = entity.GetComponent<Render>();
-            return Convert.ToInt32(Vector3.Distance(Player.Entity.Pos, object_.Pos));
+            return Convert.ToInt32(Vector3.Distance(Player.entity_.Pos, object_.Pos));
         }
 
         //public static int EntityDistance(Entity entity)
