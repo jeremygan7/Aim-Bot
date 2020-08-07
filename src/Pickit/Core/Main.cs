@@ -11,7 +11,7 @@ using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Enums;
 using ImGuiNET;
 using SharpDX;
-using Player = PoeHUD.Poe.Components.Player;
+using Player = ExileCore.PoEMemory.Components.Player;
 
 namespace Aimbot.Core
 {
@@ -19,7 +19,7 @@ namespace Aimbot.Core
     {
         private const int PixelBorder = 3;
         private readonly Stopwatch _aimTimer = Stopwatch.StartNew();
-        private readonly List<EntityWrapper> _entities = new List<EntityWrapper>();
+        private readonly List<Entity> _entities = new List<Entity>();
         private bool _aiming;
         private Vector2 _clickWindowOffset;
         private bool _mouseWasHeldDown;
@@ -29,41 +29,46 @@ namespace Aimbot.Core
 
         public string[] LightlessGrub =
         {
-                "Metadata/Monsters/HuhuGrub/AbyssGrubMobile",
-                "Metadata/Monsters/HuhuGrub/AbyssGrubMobileMinion"
+            "Metadata/Monsters/HuhuGrub/AbyssGrubMobile",
+            "Metadata/Monsters/HuhuGrub/AbyssGrubMobileMinion"
         };
 
         public string PluginVersion;
 
         public string[] RaisedZombie =
         {
-                "Metadata/Monsters/RaisedZombies/RaisedZombieStandard",
-                "Metadata/Monsters/RaisedZombies/RaisedZombieMummy",
-                "Metadata/Monsters/RaisedZombies/NecromancerRaisedZombieStandard"
+            "Metadata/Monsters/RaisedZombies/RaisedZombieStandard",
+            "Metadata/Monsters/RaisedZombies/RaisedZombieMummy",
+            "Metadata/Monsters/RaisedZombies/NecromancerRaisedZombieStandard"
         };
 
         public string[] SummonedSkeleton =
         {
-                "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStandard",
-                "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatue",
-                "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonMannequin",
-                "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatueMale",
-                "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatueGold",
-                "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatueGoldMale",
-                "Metadata/Monsters/RaisedSkeletons/NecromancerRaisedSkeletonStandard",
-                "Metadata/Monsters/RaisedSkeletons/TalismanRaisedSkeletonStandard"
+            "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStandard",
+            "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatue",
+            "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonMannequin",
+            "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatueMale",
+            "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatueGold",
+            "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatueGoldMale",
+            "Metadata/Monsters/RaisedSkeletons/NecromancerRaisedSkeletonStandard",
+            "Metadata/Monsters/RaisedSkeletons/TalismanRaisedSkeletonStandard"
         };
 
         //https://stackoverflow.com/questions/826777/how-to-have-an-auto-incrementing-version-number-visual-studio
         public Version version = Assembly.GetExecutingAssembly().GetName().Version;
+        public static Main Controller { get; set; }
+        public DateTime BuildDate;
 
-        public Main() => PluginName = "Aim Bot";
-
-        public override void Initialise()
+        public override bool Initialise()
         {
-            buildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
+            Name = "Aim Bot";
+
+            Controller = this;
+            BuildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
             PluginVersion = $"{version}";
             IgnoredMonsters = LoadFile("Ignored Monsters");
+
+            return true;
         }
 
         public override void Render()
@@ -79,8 +84,8 @@ namespace Aimbot.Core
             try
             {
                 if (Keyboard.IsKeyDown((int) Settings.AimKey.Value)
-                 && !GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible
-                 && !GameController.Game.IngameState.IngameUi.OpenLeftPanel.IsVisible)
+                    && !GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible
+                    && !GameController.Game.IngameState.IngameUi.OpenLeftPanel.IsVisible)
                 {
                     if (_aiming) return;
                     _aiming = true;
@@ -112,12 +117,14 @@ namespace Aimbot.Core
                     Vector2 iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
                     float maxWidth = 0;
                     float maxheight = 0;
-                    Size2 size = Graphics.DrawText(AimWeightEB(entity).ToString(), 15, iconRect, Color.White, FontDrawFlags.Center);
+                    Size2 size = Graphics.DrawText(AimWeightEB(entity).ToString(), 15, iconRect, Color.White,
+                        FontDrawFlags.Center);
                     chestScreenCoords.Y += size.Height;
                     maxheight += size.Height;
                     maxWidth = Math.Max(maxWidth, size.Width);
-                    RectangleF background = new RectangleF(chestScreenCoords.X - maxWidth / 2 - 3, chestScreenCoords.Y - maxheight, maxWidth + 6,
-                            maxheight);
+                    RectangleF background = new RectangleF(chestScreenCoords.X - maxWidth / 2 - 3,
+                        chestScreenCoords.Y - maxheight, maxWidth + 6,
+                        maxheight);
                     Graphics.DrawBox(background, Color.Black);
                 }
             }
@@ -137,7 +144,8 @@ namespace Aimbot.Core
             }
 
             EntityWrapper rndEntity =
-                    GameController.Entities.FirstOrDefault(x => x.HasComponent<Render>() && GameController.Player.Address != x.Address);
+                GameController.Entities.FirstOrDefault(x =>
+                    x.HasComponent<Render>() && GameController.Player.Address != x.Address);
             for (int i = 0; i < plottedCirclePoints.Count; i++)
             {
                 if (i >= plottedCirclePoints.Count - 1)
@@ -161,63 +169,84 @@ namespace Aimbot.Core
             Settings.ShowAimRange.Value = ImGuiExtension.Checkbox("Display Aim Range", Settings.ShowAimRange.Value);
             Settings.AimRange.Value = ImGuiExtension.IntDrag("Target Distance", "%.00f units", Settings.AimRange);
             Settings.AimLoopDelay.Value = ImGuiExtension.IntDrag("Target Delay", "%.00f ms", Settings.AimLoopDelay);
-            Settings.DebugMonsterWeight.Value = ImGuiExtension.Checkbox("Draw Weight Results On Monsters", Settings.DebugMonsterWeight.Value);
+            Settings.DebugMonsterWeight.Value =
+                ImGuiExtension.Checkbox("Draw Weight Results On Monsters", Settings.DebugMonsterWeight.Value);
             Settings.RMousePos.Value =
-                    ImGuiExtension.Checkbox("Restore Mouse Position After Letting Go Of Auto Aim Hotkey", Settings.RMousePos.Value);
-            Settings.AimKey.Value = ImGuiExtension.HotkeySelector("Auto Aim Hotkey", "Auto Aim Popup", Settings.AimKey.Value);
+                ImGuiExtension.Checkbox("Restore Mouse Position After Letting Go Of Auto Aim Hotkey",
+                    Settings.RMousePos.Value);
+            Settings.AimKey.Value =
+                ImGuiExtension.HotkeySelector("Auto Aim Hotkey", "Auto Aim Popup", Settings.AimKey.Value);
             Settings.AimPlayers.Value = ImGuiExtension.Checkbox("Aim Players Instead?", Settings.AimPlayers.Value);
             ImGui.Separator();
             ImGui.BulletText("Weight Settings");
             ToolTip("Aims monsters with higher weight first");
-            Settings.UniqueRarityWeight.Value = ImGuiExtension.IntDrag("Unique Monster", Settings.UniqueRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
-                    Settings.UniqueRarityWeight);
-            Settings.RareRarityWeight.Value = ImGuiExtension.IntDrag("Rare Monster", Settings.RareRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
-                    Settings.RareRarityWeight);
-            Settings.MagicRarityWeight.Value = ImGuiExtension.IntDrag("Magic Monster", Settings.MagicRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
-                    Settings.MagicRarityWeight);
-            Settings.NormalRarityWeight.Value = ImGuiExtension.IntDrag("Normal Monster", Settings.NormalRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
-                    Settings.NormalRarityWeight);
+            Settings.UniqueRarityWeight.Value = ImGuiExtension.IntDrag("Unique Monster",
+                Settings.UniqueRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
+                Settings.UniqueRarityWeight);
+            Settings.RareRarityWeight.Value = ImGuiExtension.IntDrag("Rare Monster",
+                Settings.RareRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
+                Settings.RareRarityWeight);
+            Settings.MagicRarityWeight.Value = ImGuiExtension.IntDrag("Magic Monster",
+                Settings.MagicRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
+                Settings.MagicRarityWeight);
+            Settings.NormalRarityWeight.Value = ImGuiExtension.IntDrag("Normal Monster",
+                Settings.NormalRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
+                Settings.NormalRarityWeight);
             Settings.CannotDieAura.Value =
-                    ImGuiExtension.IntDrag("Cannot Die Aura", Settings.CannotDieAura.Value > 0 ? "+%.00f" : "%.00f", Settings.CannotDieAura);
+                ImGuiExtension.IntDrag("Cannot Die Aura", Settings.CannotDieAura.Value > 0 ? "+%.00f" : "%.00f",
+                    Settings.CannotDieAura);
             ToolTip("Monster that holds the Cannot Die Arua");
             Settings.capture_monster_trapped.Value = ImGuiExtension.IntDrag("Monster In Net",
-                    Settings.capture_monster_trapped.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_trapped);
+                Settings.capture_monster_trapped.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_trapped);
             ToolTip("Monster is currently in a net");
             Settings.capture_monster_enraged.Value = ImGuiExtension.IntDrag("Monster Broken Free From Net",
-                    Settings.capture_monster_enraged.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_enraged);
+                Settings.capture_monster_enraged.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_enraged);
             ToolTip("Monster has recently broken free from the net");
             Settings.BeastHearts.Value =
-                    ImGuiExtension.IntDrag("Malachai Hearts", Settings.BeastHearts.Value > 0 ? "+%.00f" : "%.00f", Settings.BeastHearts);
+                ImGuiExtension.IntDrag("Malachai Hearts", Settings.BeastHearts.Value > 0 ? "+%.00f" : "%.00f",
+                    Settings.BeastHearts);
             Settings.TukohamaShieldTotem.Value = ImGuiExtension.IntDrag("Tukohama Shield Totem",
-                    Settings.TukohamaShieldTotem.Value > 0 ? "+%.00f" : "%.00f", Settings.TukohamaShieldTotem);
+                Settings.TukohamaShieldTotem.Value > 0 ? "+%.00f" : "%.00f", Settings.TukohamaShieldTotem);
             ToolTip("Usually seen in the Tukahama Boss (Act 6)");
             Settings.StrongBoxMonster.Value = ImGuiExtension.IntDrag("Strongbox Monster (Experimental)",
-                    Settings.StrongBoxMonster.Value > 0 ? "+%.00f" : "%.00f", Settings.StrongBoxMonster);
+                Settings.StrongBoxMonster.Value > 0 ? "+%.00f" : "%.00f", Settings.StrongBoxMonster);
             Settings.BreachMonsterWeight.Value = ImGuiExtension.IntDrag("Breach Monster (Experimental)",
-                    Settings.BreachMonsterWeight.Value > 0 ? "+%.00f" : "%.00f", Settings.BreachMonsterWeight);
+                Settings.BreachMonsterWeight.Value > 0 ? "+%.00f" : "%.00f", Settings.BreachMonsterWeight);
             Settings.HarbingerMinionWeight.Value = ImGuiExtension.IntDrag("Harbinger Monster (Experimental)",
-                    Settings.HarbingerMinionWeight.Value > 0 ? "+%.00f" : "%.00f", Settings.HarbingerMinionWeight);
-            Settings.SummonedSkeoton.Value = ImGuiExtension.IntDrag("Summoned Skeleton", Settings.SummonedSkeoton.Value > 0 ? "+%.00f" : "%.00f",
-                    Settings.SummonedSkeoton);
+                Settings.HarbingerMinionWeight.Value > 0 ? "+%.00f" : "%.00f", Settings.HarbingerMinionWeight);
+            Settings.SummonedSkeoton.Value = ImGuiExtension.IntDrag("Summoned Skeleton",
+                Settings.SummonedSkeoton.Value > 0 ? "+%.00f" : "%.00f",
+                Settings.SummonedSkeoton);
             Settings.RaisesUndead.Value =
-                    ImGuiExtension.IntDrag("Raises Undead", Settings.RaisesUndead.Value > 0 ? "+%.00f" : "%.00f", Settings.RaisesUndead);
+                ImGuiExtension.IntDrag("Raises Undead", Settings.RaisesUndead.Value > 0 ? "+%.00f" : "%.00f",
+                    Settings.RaisesUndead);
             Settings.RaisedZombie.Value =
-                    ImGuiExtension.IntDrag("Raised Zombie", Settings.RaisedZombie.Value > 0 ? "+%.00f" : "%.00f", Settings.RaisedZombie);
+                ImGuiExtension.IntDrag("Raised Zombie", Settings.RaisedZombie.Value > 0 ? "+%.00f" : "%.00f",
+                    Settings.RaisedZombie);
             Settings.LightlessGrub.Value =
-                    ImGuiExtension.IntDrag("Lightless Grub", Settings.LightlessGrub.Value > 0 ? "+%.00f" : "%.00f", Settings.LightlessGrub);
+                ImGuiExtension.IntDrag("Lightless Grub", Settings.LightlessGrub.Value > 0 ? "+%.00f" : "%.00f",
+                    Settings.LightlessGrub);
             ToolTip("Usually seen in the Abyss, they are the little insects");
             Settings.TaniwhaTail.Value =
-                    ImGuiExtension.IntDrag("Taniwha Tail", Settings.TaniwhaTail.Value > 0 ? "+%.00f" : "%.00f", Settings.TaniwhaTail);
+                ImGuiExtension.IntDrag("Taniwha Tail", Settings.TaniwhaTail.Value > 0 ? "+%.00f" : "%.00f",
+                    Settings.TaniwhaTail);
             ToolTip("Usually seen in the Kaom Stronghold Areas");
             Settings.DiesAfterTime.Value =
-                    ImGuiExtension.IntDrag("Dies After Time", Settings.DiesAfterTime.Value > 0 ? "+%.00f" : "%.00f", Settings.DiesAfterTime);
+                ImGuiExtension.IntDrag("Dies After Time", Settings.DiesAfterTime.Value > 0 ? "+%.00f" : "%.00f",
+                    Settings.DiesAfterTime);
             ToolTip("If the Monster dies soon, Usually this is a totem that was summoned");
             base.DrawSettingsMenu();
         }
 
-        public override void EntityAdded(EntityWrapper entityWrapper) { _entities.Add(entityWrapper); }
+        public override void EntityAdded(EntityWrapper entityWrapper)
+        {
+            _entities.Add(entityWrapper);
+        }
 
-        public override void EntityRemoved(EntityWrapper entityWrapper) { _entities.Remove(entityWrapper); }
+        public override void EntityRemoved(EntityWrapper entityWrapper)
+        {
+            _entities.Remove(entityWrapper);
+        }
 
         public HashSet<string> LoadFile(string fileName)
         {
@@ -234,7 +263,10 @@ namespace Aimbot.Core
             return hashSet;
         }
 
-        private bool IsIgnoredMonster(string path) { return IgnoredMonsters.Any(ignoreString => path.ToLower().Contains(ignoreString.ToLower())); }
+        private bool IsIgnoredMonster(string path)
+        {
+            return IgnoredMonsters.Any(ignoreString => path.ToLower().Contains(ignoreString.ToLower()));
+        }
 
         private void Aimbot()
         {
@@ -255,25 +287,32 @@ namespace Aimbot.Core
 
         public int TryGetStat(string playerStat)
         {
-            return !GameController.EntityListWrapper.PlayerStats.TryGetValue(GameController.Files.Stats.records[playerStat].ID, out var statValue) ? 0 : statValue;
+            return !GameController.EntityListWrapper.PlayerStats.TryGetValue(
+                GameController.Files.Stats.records[playerStat].ID, out var statValue)
+                ? 0
+                : statValue;
         }
+
         public int TryGetStat(string playerStat, EntityWrapper entity)
         {
-            return !entity.GetComponent<Stats>().StatDictionary.TryGetValue(GameController.Files.Stats.records[playerStat].ID, out var statValue) ? 0 : statValue;
+            return !entity.GetComponent<Stats>().StatDictionary
+                .TryGetValue(GameController.Files.Stats.records[playerStat].ID, out var statValue)
+                ? 0
+                : statValue;
         }
 
         private void PlayerAim()
         {
             List<Tuple<float, EntityWrapper>> AlivePlayers = _entities
-                                                            .Where(x => x.HasComponent<Player>()
-                                                                     && x.IsAlive
-                                                                     && x.Address != AimBot.Utilities.Player.Entity.Address
-                                                                     && TryGetStat("ignored_by_enemy_target_selection", x) == 0
-                                                                     && TryGetStat("cannot_die", x) == 0
-                                                                     && TryGetStat("cannot_be_damaged", x) == 0)
-                                                            .Select(x => new Tuple<float, EntityWrapper>(Misc.EntityDistance(x), x))
-                                                            .OrderBy(x => x.Item1)
-                                                            .ToList();
+                .Where(x => x.HasComponent<Player>()
+                            && x.IsAlive
+                            && x.Address != AimBot.Utilities.Player.entity_.Address
+                            && TryGetStat("ignored_by_enemy_target_selection", x) == 0
+                            && TryGetStat("cannot_die", x) == 0
+                            && TryGetStat("cannot_be_damaged", x) == 0)
+                .Select(x => new Tuple<float, EntityWrapper>(Misc.EntityDistance(x), x))
+                .OrderBy(x => x.Item1)
+                .ToList();
             Tuple<float, EntityWrapper> closestMonster = AlivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
             if (closestMonster != null)
             {
@@ -290,15 +329,18 @@ namespace Aimbot.Core
                 }
 
                 Camera camera = GameController.Game.IngameState.Camera;
-                Vector2 entityPosToScreen = camera.WorldToScreen(closestMonster.Item2.Pos.Translate(0, 0, 0), closestMonster.Item2);
+                Vector2 entityPosToScreen =
+                    camera.WorldToScreen(closestMonster.Item2.Pos.Translate(0, 0, 0), closestMonster.Item2);
                 RectangleF vectWindow = GameController.Window.GetWindowRectangle();
-                if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom || entityPosToScreen.Y - PixelBorder < vectWindow.Top)
+                if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
+                    entityPosToScreen.Y - PixelBorder < vectWindow.Top)
                 {
                     _aiming = false;
                     return;
                 }
 
-                if (entityPosToScreen.X + PixelBorder > vectWindow.Right || entityPosToScreen.X - PixelBorder < vectWindow.Left)
+                if (entityPosToScreen.X + PixelBorder > vectWindow.Right ||
+                    entityPosToScreen.X - PixelBorder < vectWindow.Left)
                 {
                     _aiming = false;
                     return;
@@ -314,7 +356,9 @@ namespace Aimbot.Core
             if (!entity.HasComponent<Life>()) return false;
             foreach (Buff buff in entity.GetComponent<Life>().Buffs)
             {
-                if (buffList.Any(searchedBuff => contains ? buff.Name.Contains(searchedBuff) : searchedBuff == buff.Name)) return true;
+                if (buffList.Any(
+                    searchedBuff => contains ? buff.Name.Contains(searchedBuff) : searchedBuff == buff.Name))
+                    return true;
             }
 
             return false;
@@ -325,7 +369,9 @@ namespace Aimbot.Core
             if (entityBuffs.Count <= 0) return false;
             foreach (Buff buff in entityBuffs)
             {
-                if (buffList.Any(searchedBuff => contains ? buff.Name.Contains(searchedBuff) : searchedBuff == buff.Name)) return true;
+                if (buffList.Any(
+                    searchedBuff => contains ? buff.Name.Contains(searchedBuff) : searchedBuff == buff.Name))
+                    return true;
             }
 
             return false;
@@ -350,23 +396,28 @@ namespace Aimbot.Core
         private void MonsterAim()
         {
             List<Tuple<float, EntityWrapper>> aliveAndHostile = _entities?.Where(x => x.HasComponent<Monster>()
-                                                                                   && x.IsAlive
-                                                                                   && x.IsHostile
-                                                                                   && !IsIgnoredMonster(x.Path)
-                                                                                   && TryGetStat("ignored_by_enemy_target_selection", x) == 0
-                                                                                   && TryGetStat("cannot_die", x) == 0
-                                                                                   && TryGetStat("cannot_be_damaged", x) == 0
-                                                                                   && !HasAnyBuff(x, new[]
+                                                                                      && x.IsAlive
+                                                                                      && x.IsHostile
+                                                                                      && !IsIgnoredMonster(x.Path)
+                                                                                      && TryGetStat(
+                                                                                          "ignored_by_enemy_target_selection",
+                                                                                          x) == 0
+                                                                                      && TryGetStat("cannot_die", x) ==
+                                                                                      0
+                                                                                      && TryGetStat("cannot_be_damaged",
+                                                                                          x) == 0
+                                                                                      && !HasAnyBuff(x, new[]
                                                                                       {
-                                                                                              "capture_monster_captured",
-                                                                                              "capture_monster_disappearing"
+                                                                                          "capture_monster_captured",
+                                                                                          "capture_monster_disappearing"
                                                                                       }))
-                                                                          .Select(x => new Tuple<float, EntityWrapper>(AimWeightEB(x), x))
-                                                                          .OrderByDescending(x => x.Item1)
-                                                                          .ToList();
+                .Select(x => new Tuple<float, EntityWrapper>(AimWeightEB(x), x))
+                .OrderByDescending(x => x.Item1)
+                .ToList();
             if (aliveAndHostile?.FirstOrDefault(x => x.Item1 < Settings.AimRange) != null)
             {
-                Tuple<float, EntityWrapper> HeightestWeightedTarget = aliveAndHostile.FirstOrDefault(x => x.Item1 < Settings.AimRange);
+                Tuple<float, EntityWrapper> HeightestWeightedTarget =
+                    aliveAndHostile.FirstOrDefault(x => x.Item1 < Settings.AimRange);
                 if (!_mouseWasHeldDown)
                 {
                     _oldMousePos = Mouse.GetCursorPositionVector();
@@ -380,15 +431,18 @@ namespace Aimbot.Core
                 }
 
                 Camera camera = GameController.Game.IngameState.Camera;
-                Vector2 entityPosToScreen = camera.WorldToScreen(HeightestWeightedTarget.Item2.Pos.Translate(0, 0, 0), HeightestWeightedTarget.Item2);
+                Vector2 entityPosToScreen = camera.WorldToScreen(HeightestWeightedTarget.Item2.Pos.Translate(0, 0, 0),
+                    HeightestWeightedTarget.Item2);
                 RectangleF vectWindow = GameController.Window.GetWindowRectangle();
-                if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom || entityPosToScreen.Y - PixelBorder < vectWindow.Top)
+                if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
+                    entityPosToScreen.Y - PixelBorder < vectWindow.Top)
                 {
                     _aiming = false;
                     return;
                 }
 
-                if (entityPosToScreen.X + PixelBorder > vectWindow.Right || entityPosToScreen.X - PixelBorder < vectWindow.Left)
+                if (entityPosToScreen.X + PixelBorder > vectWindow.Right ||
+                    entityPosToScreen.X - PixelBorder < vectWindow.Left)
                 {
                     _aiming = false;
                     return;
@@ -406,12 +460,13 @@ namespace Aimbot.Core
             weight -= Misc.EntityDistance(m) / 10;
             MonsterRarity rarity = m.GetComponent<ObjectMagicProperties>().Rarity;
             List<string> monsterMagicProperties = new List<string>();
-            if (m.HasComponent<ObjectMagicProperties>()) monsterMagicProperties = m.GetComponent<ObjectMagicProperties>().Mods;
+            if (m.HasComponent<ObjectMagicProperties>())
+                monsterMagicProperties = m.GetComponent<ObjectMagicProperties>().Mods;
             List<Buff> monsterBuffs = new List<Buff>();
             if (m.HasComponent<Life>()) monsterBuffs = m.GetComponent<Life>().Buffs;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
             {
-                    "AuraCannotDie"
+                "AuraCannotDie"
             }, true))
                 weight += Settings.CannotDieAura;
             if (m.GetComponent<Life>().HasBuff("capture_monster_trapped")) weight += Settings.capture_monster_trapped;
@@ -421,7 +476,7 @@ namespace Aimbot.Core
             if (m.Path == "Metadata/Monsters/Tukohama/TukohamaShieldTotem") weight += Settings.TukohamaShieldTotem;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
             {
-                    "MonsterRaisesUndeadText"
+                "MonsterRaisesUndeadText"
             }))
             {
                 weight += Settings.RaisesUndead;
@@ -430,11 +485,12 @@ namespace Aimbot.Core
             // Experimental, seems like a buff only strongbox monsters get
             if (HasAnyBuff(monsterBuffs, new[]
             {
-                    "summoned_monster_epk_buff"
+                "summoned_monster_epk_buff"
             }))
             {
                 weight += Settings.StrongBoxMonster;
             }
+
             switch (rarity)
             {
                 case MonsterRarity.Unique:

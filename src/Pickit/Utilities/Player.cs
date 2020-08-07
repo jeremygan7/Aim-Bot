@@ -6,7 +6,7 @@ namespace AimBot.Utilities
 {
     public class Player
     {
-        public static Entity entity_     => BasePlugin.API.GameController.Player;
+        public static Entity entity_;
         public static long          Experience => entity_.GetComponent<ExileCore.PoEMemory.Components.Player>().XP;
         public static string        Name       => entity_.GetComponent<ExileCore.PoEMemory.Components.Player>().PlayerName;
         public static float         X          => entity_.GetComponent<Render>().X;
