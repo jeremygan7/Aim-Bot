@@ -27,26 +27,26 @@ namespace Aimbot.Core
         private Vector2 _clickWindowOffset;
         private bool _mouseWasHeldDown;
         private Vector2 _oldMousePos;
-        public DateTime buildDate;
-        public HashSet<string> IgnoredMonsters;
-        public string PluginDirectory;
-        private Entity Player;
-        public string[] LightlessGrub =
+        private HashSet<string> _ignoredMonsters;
+        private string _pluginDirectory;
+        private Entity _player;
+
+        private readonly string[] _lightlessGrub =
         {
             "Metadata/Monsters/HuhuGrub/AbyssGrubMobile",
             "Metadata/Monsters/HuhuGrub/AbyssGrubMobileMinion"
         };
 
-        public string PluginVersion;
+        private string _pluginVersion;
 
-        public string[] RaisedZombie =
+        private readonly string[] _raisedZombie =
         {
             "Metadata/Monsters/RaisedZombies/RaisedZombieStandard",
             "Metadata/Monsters/RaisedZombies/RaisedZombieMummy",
             "Metadata/Monsters/RaisedZombies/NecromancerRaisedZombieStandard"
         };
 
-        public string[] SummonedSkeleton =
+        private readonly string[] _summonedSkeleton =
         {
             "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStandard",
             "Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStatue",
@@ -59,19 +59,20 @@ namespace Aimbot.Core
         };
 
         //https://stackoverflow.com/questions/826777/how-to-have-an-auto-incrementing-version-number-visual-studio
-        public Version version = Assembly.GetExecutingAssembly().GetName().Version;
+        private readonly Version _version = Assembly.GetExecutingAssembly().GetName().Version;
+
         //public static Main Controller { get; set; }
-        public DateTime BuildDate;
+        private DateTime _buildDate;
 
         public override bool Initialise()
         {
-            Player = GameController.Player;
+            _player = GameController.Player;
             Name = "Aim Bot";
-            PluginDirectory = DirectoryFullName;
+            _pluginDirectory = DirectoryFullName;
             //Controller = this;
-            BuildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
-            PluginVersion = $"{version}";
-            IgnoredMonsters = LoadFile("Ignored Monsters");
+            _buildDate = new DateTime(2000, 1, 1).AddDays(_version.Build).AddSeconds(_version.Revision * 2);
+            _pluginVersion = $"{_version}";
+            _ignoredMonsters = LoadFile("Ignored Monsters");
 
             return true;
         }
@@ -125,7 +126,7 @@ namespace Aimbot.Core
             //        float maxheight = 0;
             //        Size2 size = Graphics.DrawText(AimWeightEB(entity).ToString(), 15, iconRect, Color.White,
             //            FontDrawFlags.Center);
-             
+
             //        chestScreenCoords.Y += size.Height;
             //        maxheight += size.Height;
             //        maxWidth = Math.Max(maxWidth, size.Width);
@@ -137,42 +138,42 @@ namespace Aimbot.Core
             //}
         }
 
-        public void DrawEllipseToWorld(Vector3 vector3Pos, int radius, int points, int lineWidth, Color color)
+        private void DrawEllipseToWorld(Vector3 vector3Pos, int radius, int points, int lineWidth, Color color)
         {
-            Camera camera = GameController.Game.IngameState.Camera;
-            List<Vector3> plottedCirclePoints = new List<Vector3>();
-            double slice = 2 * Math.PI / points;
-            for (int i = 0; i < points; i++)
+            var camera = GameController.Game.IngameState.Camera;
+            var plottedCirclePoints = new List<Vector3>();
+            var slice = 2 * Math.PI / points;
+            for (var i = 0; i < points; i++)
             {
-                double angle = slice * i;
-                decimal x = (decimal) vector3Pos.X + decimal.Multiply(radius, (decimal) Math.Cos(angle));
-                decimal y = (decimal) vector3Pos.Y + decimal.Multiply(radius, (decimal) Math.Sin(angle));
+                var angle = slice * i;
+                var x = (decimal) vector3Pos.X + decimal.Multiply(radius, (decimal) Math.Cos(angle));
+                var y = (decimal) vector3Pos.Y + decimal.Multiply(radius, (decimal) Math.Sin(angle));
                 plottedCirclePoints.Add(new Vector3((float) x, (float) y, vector3Pos.Z));
             }
 
             Entity rndEntity =
                 GameController.Entities.FirstOrDefault(x =>
                     x.HasComponent<Render>() && GameController.Player.Address != x.Address);
-            for (int i = 0; i < plottedCirclePoints.Count; i++)
+            for (var i = 0; i < plottedCirclePoints.Count; i++)
             {
                 if (i >= plottedCirclePoints.Count - 1)
                 {
-                    Vector2 pointEnd1 = camera.WorldToScreen(plottedCirclePoints.Last()/*, rndEntity*/);
-                    Vector2 pointEnd2 = camera.WorldToScreen(plottedCirclePoints[0]/*, rndEntity*/);
+                    Vector2 pointEnd1 = camera.WorldToScreen(plottedCirclePoints.Last() /*, rndEntity*/);
+                    Vector2 pointEnd2 = camera.WorldToScreen(plottedCirclePoints[0] /*, rndEntity*/);
                     Graphics.DrawLine(pointEnd1, pointEnd2, lineWidth, color);
                     return;
                 }
 
-                Vector2 point1 = camera.WorldToScreen(plottedCirclePoints[i]/*, rndEntity*/);
-                Vector2 point2 = camera.WorldToScreen(plottedCirclePoints[i + 1]/*, rndEntity*/);
+                Vector2 point1 = camera.WorldToScreen(plottedCirclePoints[i] /*, rndEntity*/);
+                Vector2 point2 = camera.WorldToScreen(plottedCirclePoints[i + 1] /*, rndEntity*/);
                 Graphics.DrawLine(point1, point2, lineWidth, color);
             }
         }
 
         public override void DrawSettings()
         {
-            ImGui.BulletText($"v{PluginVersion}");
-            ImGui.BulletText($"Last Updated: {buildDate}");
+            ImGui.BulletText($"v{_pluginVersion}");
+            ImGui.BulletText($"Last Updated: {_buildDate}");
             Settings.ShowAimRange.Value = ImGuiExtension.Checkbox("Display Aim Range", Settings.ShowAimRange.Value);
             Settings.AimRange.Value = ImGuiExtension.IntDrag("Target Distance", "%.00f units", Settings.AimRange);
             Settings.AimLoopDelay.Value = ImGuiExtension.IntDrag("Target Delay", "%.00f ms", Settings.AimLoopDelay);
@@ -182,7 +183,7 @@ namespace Aimbot.Core
                 ImGuiExtension.Checkbox("Restore Mouse Position After Letting Go Of Auto Aim Hotkey",
                     Settings.RMousePos.Value);
             Settings.AimKey.Value =
-                ImGuiExtension.HotkeySelector("Auto Aim Hotkey",  Settings.AimKey.Value);
+                ImGuiExtension.HotkeySelector("Auto Aim Hotkey", Settings.AimKey.Value);
             Settings.AimPlayers.Value = ImGuiExtension.Checkbox("Aim Players Instead?", Settings.AimPlayers.Value);
             ImGui.Separator();
             ImGui.BulletText("Weight Settings");
@@ -245,19 +246,19 @@ namespace Aimbot.Core
             base.DrawSettings();
         }
 
-        public override void EntityAdded(Entity Entity)
+        public override void EntityAdded(Entity entity)
         {
-            _entities.Add(Entity);
+            _entities.Add(entity);
         }
 
-        public override void EntityRemoved(Entity Entity)
+        public override void EntityRemoved(Entity entity)
         {
-            _entities.Remove(Entity);
+            _entities.Remove(entity);
         }
 
-        public HashSet<string> LoadFile(string fileName)
+        private HashSet<string> LoadFile(string fileName)
         {
-            string file = $@"{PluginDirectory}\{fileName}.txt";
+            string file = $@"{_pluginDirectory}\{fileName}.txt";
             //string file = $@"{fileName}.txt";
             if (!File.Exists(file))
             {
@@ -273,7 +274,7 @@ namespace Aimbot.Core
 
         private bool IsIgnoredMonster(string path)
         {
-            return IgnoredMonsters.Any(ignoreString => path.ToLower().Contains(ignoreString.ToLower()));
+            return _ignoredMonsters.Any(ignoreString => path.ToLower().Contains(ignoreString.ToLower()));
         }
 
         private void Aimbot()
@@ -302,65 +303,64 @@ namespace Aimbot.Core
         //        : statValue;
         //}
 
-        public int TryGetStat(string playerStat, Entity entity)
+        private int TryGetStat(string playerStat, Entity entity)
         {
             return !entity.GetComponent<Stats>().StatDictionary
-                .TryGetValue((GameStat) GameController.Files.Stats.records[playerStat].ID, out var statValue) // TODO: test typecast (GameStat)
+                .TryGetValue((GameStat) GameController.Files.Stats.records[playerStat].ID,
+                    out var statValue) // TODO: test typecast (GameStat)
                 ? 0
                 : statValue;
         }
 
         private void PlayerAim()
         {
-            List<Tuple<float, Entity>> AlivePlayers = _entities
+            var alivePlayers = _entities
                 .Where(x => x.HasComponent<Player>()
                             && x.IsAlive
                             && x.Address != AimBot.Utilities.Player.entity_.Address
                             && TryGetStat("ignored_by_enemy_target_selection", x) == 0
                             && TryGetStat("cannot_die", x) == 0
                             && TryGetStat("cannot_be_damaged", x) == 0)
-                .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x, Player), x))
+                .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x, _player), x))
                 .OrderBy(x => x.Item1)
                 .ToList();
-            Tuple<float, Entity> closestMonster = AlivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
-            if (closestMonster != null)
+            var closestMonster = alivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
+            if (closestMonster == null) return;
+            if (!_mouseWasHeldDown)
             {
-                if (!_mouseWasHeldDown)
-                {
-                    _oldMousePos = Mouse.GetCursorPositionVector();
-                    _mouseWasHeldDown = true;
-                }
-
-                if (closestMonster.Item1 >= Settings.AimRange)
-                {
-                    _aiming = false;
-                    return;
-                }
-
-                Camera camera = GameController.Game.IngameState.Camera;
-                Vector2 entityPosToScreen =
-                    camera.WorldToScreen(closestMonster.Item2.Pos.Translate(0, 0, 0)/*, closestMonster.Item2*/);
-                RectangleF vectWindow = GameController.Window.GetWindowRectangle();
-                if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
-                    entityPosToScreen.Y - PixelBorder < vectWindow.Top)
-                {
-                    _aiming = false;
-                    return;
-                }
-
-                if (entityPosToScreen.X + PixelBorder > vectWindow.Right ||
-                    entityPosToScreen.X - PixelBorder < vectWindow.Left)
-                {
-                    _aiming = false;
-                    return;
-                }
-
-                _clickWindowOffset = GameController.Window.GetWindowRectangle().TopLeft;
-                Mouse.SetCursorPos(entityPosToScreen + _clickWindowOffset);
+                _oldMousePos = Mouse.GetCursorPositionVector();
+                _mouseWasHeldDown = true;
             }
+
+            if (closestMonster.Item1 >= Settings.AimRange)
+            {
+                _aiming = false;
+                return;
+            }
+
+            var camera = GameController.Game.IngameState.Camera;
+            var entityPosToScreen =
+                camera.WorldToScreen(closestMonster.Item2.Pos.Translate(0, 0, 0) /*, closestMonster.Item2*/);
+            var vectWindow = GameController.Window.GetWindowRectangle();
+            if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
+                entityPosToScreen.Y - PixelBorder < vectWindow.Top)
+            {
+                _aiming = false;
+                return;
+            }
+
+            if (entityPosToScreen.X + PixelBorder > vectWindow.Right ||
+                entityPosToScreen.X - PixelBorder < vectWindow.Left)
+            {
+                _aiming = false;
+                return;
+            }
+
+            _clickWindowOffset = GameController.Window.GetWindowRectangle().TopLeft;
+            Mouse.SetCursorPos(entityPosToScreen + _clickWindowOffset);
         }
 
-        public bool HasAnyBuff(Entity entity, string[] buffList, bool contains = false)
+        private bool HasAnyBuff(Entity entity, string[] buffList, bool contains = false)
         {
             if (!entity.HasComponent<Life>()) return false;
             foreach (Buff buff in entity.GetComponent<Life>().Buffs)
@@ -386,12 +386,12 @@ namespace Aimbot.Core
             return false;
         }
 
-        public bool HasAnyMagicAttribute(List<string> EntitiesMagicMods, string[] magicList, bool contains = false)
+        private static bool HasAnyMagicAttribute(List<string> entitiesMagicMods, string[] magicList, bool contains = false)
         {
-            if (EntitiesMagicMods.Count <= 0) return false;
-            foreach (string buff in EntitiesMagicMods)
+            if (entitiesMagicMods.Count <= 0) return false;
+            foreach (var buff in entitiesMagicMods)
             {
-                foreach (string magicSearch in magicList)
+                foreach (var magicSearch in magicList)
                 {
                     if (contains ? !buff.Contains(magicSearch) : magicSearch != buff) continue;
                     //LogMessage($"{buff} Contains {magicSearch}", 1);
@@ -404,28 +404,28 @@ namespace Aimbot.Core
 
         private void MonsterAim()
         {
-            List<Tuple<float, Entity>> aliveAndHostile = _entities?.Where(x => x.HasComponent<Monster>()
-                                                                                      && x.IsAlive
-                                                                                      && x.IsHostile
-                                                                                      && !IsIgnoredMonster(x.Path)
-                                                                                      && TryGetStat(
-                                                                                          "ignored_by_enemy_target_selection",
-                                                                                          x) == 0
-                                                                                      && TryGetStat("cannot_die", x) ==
-                                                                                      0
-                                                                                      && TryGetStat("cannot_be_damaged",
-                                                                                          x) == 0
-                                                                                      && !HasAnyBuff(x, new[]
-                                                                                      {
-                                                                                          "capture_monster_captured",
-                                                                                          "capture_monster_disappearing"
-                                                                                      }))
-                .Select(x => new Tuple<float, Entity>(AimWeightEB(x), x))
+            var aliveAndHostile = _entities?.Where(x => x.HasComponent<Monster>()
+                                                        && x.IsAlive
+                                                        && x.IsHostile
+                                                        && !IsIgnoredMonster(x.Path)
+                                                        && TryGetStat(
+                                                            "ignored_by_enemy_target_selection",
+                                                            x) == 0
+                                                        && TryGetStat("cannot_die", x) ==
+                                                        0
+                                                        && TryGetStat("cannot_be_damaged",
+                                                            x) == 0
+                                                        && !HasAnyBuff(x, new[]
+                                                        {
+                                                            "capture_monster_captured",
+                                                            "capture_monster_disappearing"
+                                                        }))
+                .Select(x => new Tuple<float, Entity>(AimWeightEb(x), x))
                 .OrderByDescending(x => x.Item1)
                 .ToList();
             if (aliveAndHostile?.FirstOrDefault(x => x.Item1 < Settings.AimRange) != null)
             {
-                Tuple<float, Entity> HeightestWeightedTarget =
+                var HeightestWeightedTarget =
                     aliveAndHostile.FirstOrDefault(x => x.Item1 < Settings.AimRange);
                 if (!_mouseWasHeldDown)
                 {
@@ -440,7 +440,9 @@ namespace Aimbot.Core
                 }
 
                 Camera camera = GameController.Game.IngameState.Camera;
-                Vector2 entityPosToScreen = camera.WorldToScreen(HeightestWeightedTarget.Item2.Pos.Translate(0, 0, 0)/*, HeightestWeightedTarget.Item2*/);
+                Vector2 entityPosToScreen =
+                    camera.WorldToScreen(
+                        HeightestWeightedTarget.Item2.Pos.Translate(0, 0, 0) /*, HeightestWeightedTarget.Item2*/);
                 RectangleF vectWindow = GameController.Window.GetWindowRectangle();
                 if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
                     entityPosToScreen.Y - PixelBorder < vectWindow.Top)
@@ -461,17 +463,17 @@ namespace Aimbot.Core
             }
         }
 
-        public float AimWeightEB(Entity entity)
+        private float AimWeightEb(Entity entity)
         {
-            Entity m = entity;
+            var m = entity;
             float weight = 0;
-                
-            weight -= Misc.EntityDistance(m, Player) / 10;
-            MonsterRarity rarity = m.GetComponent<ObjectMagicProperties>().Rarity;
-            List<string> monsterMagicProperties = new List<string>();
+
+            weight -= Misc.EntityDistance(m, _player) / 10;
+            var rarity = m.GetComponent<ObjectMagicProperties>().Rarity;
+            var monsterMagicProperties = new List<string>();
             if (m.HasComponent<ObjectMagicProperties>())
                 monsterMagicProperties = m.GetComponent<ObjectMagicProperties>().Mods;
-            List<Buff> monsterBuffs = new List<Buff>();
+            var monsterBuffs = new List<Buff>();
             if (m.HasComponent<Life>()) monsterBuffs = m.GetComponent<Life>().Buffs;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
             {
@@ -520,9 +522,9 @@ namespace Aimbot.Core
 
             if (m.HasComponent<SoundParameterBreach>()) weight += Settings.BreachMonsterWeight;
             if (m.HasComponent<DiesAfterTime>()) weight += Settings.DiesAfterTime;
-            if (SummonedSkeleton.Any(path => m.Path == path)) weight += Settings.SummonedSkeoton;
-            if (RaisedZombie.Any(path => m.Path == path)) weight += Settings.RaisedZombie;
-            if (LightlessGrub.Any(path => m.Path == path)) weight += Settings.LightlessGrub;
+            if (_summonedSkeleton.Any(path => m.Path == path)) weight += Settings.SummonedSkeoton;
+            if (_raisedZombie.Any(path => m.Path == path)) weight += Settings.RaisedZombie;
+            if (_lightlessGrub.Any(path => m.Path == path)) weight += Settings.LightlessGrub;
             if (m.Path.Contains("TaniwhaTail")) weight += Settings.TaniwhaTail;
             return weight;
         }
