@@ -30,7 +30,7 @@ namespace Aimbot.Core
         public DateTime buildDate;
         public HashSet<string> IgnoredMonsters;
         public string PluginDirectory;
-
+        private Entity Player;
         public string[] LightlessGrub =
         {
             "Metadata/Monsters/HuhuGrub/AbyssGrubMobile",
@@ -65,6 +65,7 @@ namespace Aimbot.Core
 
         public override bool Initialise()
         {
+            Player = GameController.Player;
             Name = "Aim Bot";
             PluginDirectory = DirectoryFullName;
             //Controller = this;
@@ -318,7 +319,7 @@ namespace Aimbot.Core
                             && TryGetStat("ignored_by_enemy_target_selection", x) == 0
                             && TryGetStat("cannot_die", x) == 0
                             && TryGetStat("cannot_be_damaged", x) == 0)
-                .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x), x))
+                .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x, Player), x))
                 .OrderBy(x => x.Item1)
                 .ToList();
             Tuple<float, Entity> closestMonster = AlivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
@@ -463,8 +464,9 @@ namespace Aimbot.Core
         public float AimWeightEB(Entity entity)
         {
             Entity m = entity;
-            int weight = 0;
-            weight -= Misc.EntityDistance(m) / 10;
+            float weight = 0;
+                
+            weight -= Misc.EntityDistance(m, Player) / 10;
             MonsterRarity rarity = m.GetComponent<ObjectMagicProperties>().Rarity;
             List<string> monsterMagicProperties = new List<string>();
             if (m.HasComponent<ObjectMagicProperties>())

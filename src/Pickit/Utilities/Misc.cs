@@ -18,7 +18,17 @@ namespace AimBot.Utilities
             var object_ = entity.GetComponent<Render>();
             return Convert.ToInt32(Vector3.Distance(Player.entity_.Pos, object_.Pos));
         }
+        public static float EntityDistance(Entity entity, Entity player)
+        {
+            var component = entity?.GetComponent<Render>();
 
+            if (component == null)
+                return 9999999f;
+
+            var objectPosition = component.Pos;
+
+            return Vector3.Distance(objectPosition, player.GetComponent<Render>().Pos);
+        }
         //public static int EntityDistance(Entity entity)
         //{
         //    var Object = entity.GetComponent<Render>();
