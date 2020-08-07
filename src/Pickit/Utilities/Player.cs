@@ -13,8 +13,8 @@ namespace AimBot.Utilities
         public static float         Y          => entity_.GetComponent<Render>().Y;
         public static int           Level      => entity_.GetComponent<ExileCore.PoEMemory.Components.Player>().Level;
         public static Life          Health     => entity_.GetComponent<Life>();
-        public static AreaInstance  Area       => BasePlugin.API.GameController.Area.CurrentArea;
-        public static uint           AreaHash   => BasePlugin.API.GameController.Game.IngameState.Data.CurrentAreaHash;
+        //public static AreaInstance  Area       => BasePlugin.API.GameController.Area.CurrentArea;
+        //public static uint           AreaHash   => BasePlugin.API.GameController.Game.IngameState.Data.CurrentAreaHash;
 
         public static bool HasBuff(string buffName) => entity_.GetComponent<Life>().HasBuff(buffName);
     }

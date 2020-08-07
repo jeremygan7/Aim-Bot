@@ -167,7 +167,7 @@ namespace Aimbot.Core
             }
         }
 
-        public override void DrawSettingsMenu()
+        public override void DrawSettings()
         {
             ImGui.BulletText($"v{PluginVersion}");
             ImGui.BulletText($"Last Updated: {buildDate}");
@@ -180,11 +180,11 @@ namespace Aimbot.Core
                 ImGuiExtension.Checkbox("Restore Mouse Position After Letting Go Of Auto Aim Hotkey",
                     Settings.RMousePos.Value);
             Settings.AimKey.Value =
-                ImGuiExtension.HotkeySelector("Auto Aim Hotkey", "Auto Aim Popup", Settings.AimKey.Value);
+                ImGuiExtension.HotkeySelector("Auto Aim Hotkey",  Settings.AimKey.Value);
             Settings.AimPlayers.Value = ImGuiExtension.Checkbox("Aim Players Instead?", Settings.AimPlayers.Value);
             ImGui.Separator();
             ImGui.BulletText("Weight Settings");
-            ToolTip("Aims monsters with higher weight first");
+            ImGui.SetTooltip("Aims monsters with higher weight first");
             Settings.UniqueRarityWeight.Value = ImGuiExtension.IntDrag("Unique Monster",
                 Settings.UniqueRarityWeight.Value > 0 ? "+%.00f" : "%.00f",
                 Settings.UniqueRarityWeight);
@@ -200,19 +200,19 @@ namespace Aimbot.Core
             Settings.CannotDieAura.Value =
                 ImGuiExtension.IntDrag("Cannot Die Aura", Settings.CannotDieAura.Value > 0 ? "+%.00f" : "%.00f",
                     Settings.CannotDieAura);
-            ToolTip("Monster that holds the Cannot Die Arua");
+            ImGui.SetTooltip("Monster that holds the Cannot Die Arua");
             Settings.capture_monster_trapped.Value = ImGuiExtension.IntDrag("Monster In Net",
                 Settings.capture_monster_trapped.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_trapped);
-            ToolTip("Monster is currently in a net");
+            ImGui.SetTooltip("Monster is currently in a net");
             Settings.capture_monster_enraged.Value = ImGuiExtension.IntDrag("Monster Broken Free From Net",
                 Settings.capture_monster_enraged.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_enraged);
-            ToolTip("Monster has recently broken free from the net");
+            ImGui.SetTooltip("Monster has recently broken free from the net");
             Settings.BeastHearts.Value =
                 ImGuiExtension.IntDrag("Malachai Hearts", Settings.BeastHearts.Value > 0 ? "+%.00f" : "%.00f",
                     Settings.BeastHearts);
             Settings.TukohamaShieldTotem.Value = ImGuiExtension.IntDrag("Tukohama Shield Totem",
                 Settings.TukohamaShieldTotem.Value > 0 ? "+%.00f" : "%.00f", Settings.TukohamaShieldTotem);
-            ToolTip("Usually seen in the Tukahama Boss (Act 6)");
+            ImGui.SetTooltip("Usually seen in the Tukahama Boss (Act 6)");
             Settings.StrongBoxMonster.Value = ImGuiExtension.IntDrag("Strongbox Monster (Experimental)",
                 Settings.StrongBoxMonster.Value > 0 ? "+%.00f" : "%.00f", Settings.StrongBoxMonster);
             Settings.BreachMonsterWeight.Value = ImGuiExtension.IntDrag("Breach Monster (Experimental)",
@@ -231,16 +231,16 @@ namespace Aimbot.Core
             Settings.LightlessGrub.Value =
                 ImGuiExtension.IntDrag("Lightless Grub", Settings.LightlessGrub.Value > 0 ? "+%.00f" : "%.00f",
                     Settings.LightlessGrub);
-            ToolTip("Usually seen in the Abyss, they are the little insects");
+            ImGui.SetTooltip("Usually seen in the Abyss, they are the little insects");
             Settings.TaniwhaTail.Value =
                 ImGuiExtension.IntDrag("Taniwha Tail", Settings.TaniwhaTail.Value > 0 ? "+%.00f" : "%.00f",
                     Settings.TaniwhaTail);
-            ToolTip("Usually seen in the Kaom Stronghold Areas");
+            ImGui.SetTooltip("Usually seen in the Kaom Stronghold Areas");
             Settings.DiesAfterTime.Value =
                 ImGuiExtension.IntDrag("Dies After Time", Settings.DiesAfterTime.Value > 0 ? "+%.00f" : "%.00f",
                     Settings.DiesAfterTime);
-            ToolTip("If the Monster dies soon, Usually this is a totem that was summoned");
-            base.DrawSettingsMenu();
+            ImGui.SetTooltip("If the Monster dies soon, Usually this is a totem that was summoned");
+            base.DrawSettings();
         }
 
         public override void EntityAdded(Entity Entity)
