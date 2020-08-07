@@ -6,15 +6,16 @@ using SharpDX;
 
 namespace Aimbot.Core
 {
-    public class Settings : SettingsBase, ISettings
+    public class Settings : ISettings
     {
+        public ToggleNode Enable { get; set; } = new ToggleNode(true);
         public HotkeyNode AimKey { get; set; } = Keys.A;
         public RangeNode<int> AimRange { get; set; } = new RangeNode<int>(600, 1, 1000);
         public RangeNode<int> AimLoopDelay { get; set; } = new RangeNode<int>(124, 1, 200);
-        public ToggleNode RMousePos { get; set; }
-        public ToggleNode AimPlayers { get; set; }
-        public ToggleNode DebugMonsterWeight { get; set; }
-        public ToggleNode ShowAimRange { get; set; }
+        public ToggleNode RMousePos { get; set; } = new ToggleNode(false);
+        public ToggleNode AimPlayers { get; set; } = new ToggleNode(false);
+        public ToggleNode DebugMonsterWeight { get; set; } = new ToggleNode(false);
+        public ToggleNode ShowAimRange { get; set; } = new ToggleNode(false);
         public RangeNode<int> UniqueRarityWeight { get; set; } = new RangeNode<int>(20, -200, 200);
         public RangeNode<int> RareRarityWeight { get; set; } = new RangeNode<int>(15, -200, 200);
         public RangeNode<int> MagicRarityWeight { get; set; } = new RangeNode<int>(10, -200, 200);
@@ -34,6 +35,5 @@ namespace Aimbot.Core
         public RangeNode<int> BreachMonsterWeight { get; set; } = new RangeNode<int>(50, -200, 200);
         public RangeNode<int> HarbingerMinionWeight { get; set; } = new RangeNode<int>(50, -200, 200);
         public ColorNode TextColor { get; set; } = new ColorBGRA(220, 190, 130, 255);
-        public ToggleNode Enable { get; set; } = new ToggleNode(true);
     }
 }
