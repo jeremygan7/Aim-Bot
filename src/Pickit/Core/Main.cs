@@ -29,6 +29,7 @@ namespace Aimbot.Core
         private Vector2 _oldMousePos;
         public DateTime buildDate;
         public HashSet<string> IgnoredMonsters;
+        public string PluginDirectory;
 
         public string[] LightlessGrub =
         {
@@ -65,7 +66,7 @@ namespace Aimbot.Core
         public override bool Initialise()
         {
             Name = "Aim Bot";
-
+            PluginDirectory = DirectoryFullName;
             //Controller = this;
             BuildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
             PluginVersion = $"{version}";
@@ -255,8 +256,8 @@ namespace Aimbot.Core
 
         public HashSet<string> LoadFile(string fileName)
         {
-            //string file = $@"{PluginDirectory}\{fileName}.txt";
-            string file = $@"{fileName}.txt";
+            string file = $@"{PluginDirectory}\{fileName}.txt";
+            //string file = $@"{fileName}.txt";
             if (!File.Exists(file))
             {
                 LogError($@"Failed to find {file}", 10);
