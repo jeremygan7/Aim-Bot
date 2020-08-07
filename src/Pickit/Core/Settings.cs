@@ -2,6 +2,7 @@
 using ExileCore.Shared.Nodes;
 using System.Windows.Forms;
 using ExileCore.Shared.Interfaces;
+using SharpDX;
 
 namespace Aimbot.Core
 {
@@ -32,6 +33,7 @@ namespace Aimbot.Core
         public RangeNode<int> DiesAfterTime { get; set; } = new RangeNode<int>(-50, -200, 200);
         public RangeNode<int> BreachMonsterWeight { get; set; } = new RangeNode<int>(50, -200, 200);
         public RangeNode<int> HarbingerMinionWeight { get; set; } = new RangeNode<int>(50, -200, 200);
+        public ColorNode TextColor { get; set; } = new ColorBGRA(220, 190, 130, 255);
         public ToggleNode Enable { get; set; } = new ToggleNode(true);
     }
 }
