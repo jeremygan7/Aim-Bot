@@ -1,5 +1,6 @@
 ﻿using System;
 using ExileCore.PoEMemory.Components;
+using ExileCore.PoEMemory.MemoryObjects;
 using SharpDX;
 
 namespace AimBot.Utilities
@@ -12,10 +13,10 @@ namespace AimBot.Utilities
         //    return (int) Math.Sqrt(Math.Pow(Player.X - Object.X, 2) + Math.Pow(Player.Y - Object.Y, 2));
         //}
 
-        public static int EntityDistance(EntityWrapper entity)
+        public static int EntityDistance(Entity entity)
         {
-            var Object = entity.GetComponent<Render>();
-            return Convert.ToInt32(Vector3.Distance(Player.Entity.Pos, Object.Pos));
+            var object_ = entity.GetComponent<Render>();
+            return Convert.ToInt32(Vector3.Distance(Player.Entity.Pos, object_.Pos));
         }
 
         //public static int EntityDistance(Entity entity)
