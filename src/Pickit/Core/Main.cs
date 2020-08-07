@@ -109,29 +109,29 @@ namespace Aimbot.Core
         private void WeightDebug()
         {
             if (!Settings.DebugMonsterWeight) return;
-            foreach (Entity entity in GameController.Entities)
-            {
-                // TODO: test
-                if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
-                {
-                    Camera camera = GameController.Game.IngameState.Camera;
-                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170)/*, entity*/);
-                    if (chestScreenCoords == new Vector2()) continue;
-                    Vector2 iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
-                    float maxWidth = 0;
-                    float maxheight = 0;
-                    Size2 size = Graphics.DrawText(AimWeightEB(entity).ToString(), 15, iconRect, Color.White,
-                        FontDrawFlags.Center);
+            //foreach (Entity entity in GameController.Entities)
+            //{
+            //    // TODO: test
+            //    if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
+            //    {
+            //        Camera camera = GameController.Game.IngameState.Camera;
+            //        Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170)/*, entity*/);
+            //        if (chestScreenCoords == new Vector2()) continue;
+            //        Vector2 iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
+            //        float maxWidth = 0;
+            //        float maxheight = 0;
+            //        Size2 size = Graphics.DrawText(AimWeightEB(entity).ToString(), 15, iconRect, Color.White,
+            //            FontDrawFlags.Center);
              
-                    chestScreenCoords.Y += size.Height;
-                    maxheight += size.Height;
-                    maxWidth = Math.Max(maxWidth, size.Width);
-                    RectangleF background = new RectangleF(chestScreenCoords.X - maxWidth / 2 - 3,
-                        chestScreenCoords.Y - maxheight, maxWidth + 6,
-                        maxheight);
-                    Graphics.DrawBox(background, Color.Black);
-                }
-            }
+            //        chestScreenCoords.Y += size.Height;
+            //        maxheight += size.Height;
+            //        maxWidth = Math.Max(maxWidth, size.Width);
+            //        RectangleF background = new RectangleF(chestScreenCoords.X - maxWidth / 2 - 3,
+            //            chestScreenCoords.Y - maxheight, maxWidth + 6,
+            //            maxheight);
+            //        Graphics.DrawBox(background, Color.Black);
+            //    }
+            //}
         }
 
         public void DrawEllipseToWorld(Vector3 vector3Pos, int radius, int points, int lineWidth, Color color)
