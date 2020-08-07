@@ -1,20 +1,21 @@
 ﻿using ExileCore;
 using ExileCore.PoEMemory.Components;
+using ExileCore.PoEMemory.MemoryObjects;
 
 namespace AimBot.Utilities
 {
     public class Player
     {
-        public static EntityWrapper Entity     => BasePlugin.API.GameController.Player;
-        public static long          Experience => Entity.GetComponent<PoeHUD.Poe.Components.Player>().XP;
-        public static string        Name       => Entity.GetComponent<PoeHUD.Poe.Components.Player>().PlayerName;
-        public static float         X          => Entity.GetComponent<Render>().X;
-        public static float         Y          => Entity.GetComponent<Render>().Y;
-        public static int           Level      => Entity.GetComponent<PoeHUD.Poe.Components.Player>().Level;
-        public static Life          Health     => Entity.GetComponent<Life>();
+        public static Entity entity_     => BasePlugin.API.GameController.Player;
+        public static long          Experience => entity_.GetComponent<ExileCore.PoEMemory.Components.Player>().XP;
+        public static string        Name       => entity_.GetComponent<ExileCore.PoEMemory.Components.Player>().PlayerName;
+        public static float         X          => entity_.GetComponent<Render>().X;
+        public static float         Y          => entity_.GetComponent<Render>().Y;
+        public static int           Level      => entity_.GetComponent<ExileCore.PoEMemory.Components.Player>().Level;
+        public static Life          Health     => entity_.GetComponent<Life>();
         public static AreaInstance  Area       => BasePlugin.API.GameController.Area.CurrentArea;
         public static uint           AreaHash   => BasePlugin.API.GameController.Game.IngameState.Data.CurrentAreaHash;
 
-        public static bool HasBuff(string buffName) => Entity.GetComponent<Life>().HasBuff(buffName);
+        public static bool HasBuff(string buffName) => entity_.GetComponent<Life>().HasBuff(buffName);
     }
 }
