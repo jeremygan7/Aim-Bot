@@ -1,10 +1,11 @@
 ﻿using System.Configuration;
 using ExileCore.Shared.Nodes;
 using System.Windows.Forms;
+using ExileCore.Shared.Interfaces;
 
 namespace Aimbot.Core
 {
-    public class Settings : SettingsBase
+    public class Settings : SettingsBase, ISettings
     {
         public HotkeyNode AimKey { get; set; } = Keys.A;
         public RangeNode<int> AimRange { get; set; } = new RangeNode<int>(600, 1, 1000);
@@ -31,5 +32,6 @@ namespace Aimbot.Core
         public RangeNode<int> DiesAfterTime { get; set; } = new RangeNode<int>(-50, -200, 200);
         public RangeNode<int> BreachMonsterWeight { get; set; } = new RangeNode<int>(50, -200, 200);
         public RangeNode<int> HarbingerMinionWeight { get; set; } = new RangeNode<int>(50, -200, 200);
+        public ToggleNode Enable { get; set; } = new ToggleNode(true);
     }
 }
