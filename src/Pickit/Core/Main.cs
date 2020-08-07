@@ -6,9 +6,11 @@ using System.Linq;
 using System.Reflection;
 using AimBot.Utilities;
 using ExileCore;
+using ExileCore.PoEMemory;
 using ExileCore.PoEMemory.Components;
 using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
 using ImGuiNET;
 using SharpDX;
 using Player = ExileCore.PoEMemory.Components.Player;
@@ -56,14 +58,14 @@ namespace Aimbot.Core
 
         //https://stackoverflow.com/questions/826777/how-to-have-an-auto-incrementing-version-number-visual-studio
         public Version version = Assembly.GetExecutingAssembly().GetName().Version;
-        public static Main Controller { get; set; }
+        //public static Main Controller { get; set; }
         public DateTime BuildDate;
 
         public override bool Initialise()
         {
             Name = "Aim Bot";
 
-            Controller = this;
+            //Controller = this;
             BuildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
             PluginVersion = $"{version}";
             IgnoredMonsters = LoadFile("Ignored Monsters");
@@ -107,7 +109,7 @@ namespace Aimbot.Core
         private void WeightDebug()
         {
             if (!Settings.DebugMonsterWeight) return;
-            foreach (EntityWrapper entity in GameController.Entities)
+            foreach (Entity entity in GameController.Entities)
             {
                 if (entity.DistanceFromPlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
                 {
@@ -143,7 +145,7 @@ namespace Aimbot.Core
                 plottedCirclePoints.Add(new Vector3((float) x, (float) y, vector3Pos.Z));
             }
 
-            EntityWrapper rndEntity =
+            Entity rndEntity =
                 GameController.Entities.FirstOrDefault(x =>
                     x.HasComponent<Render>() && GameController.Player.Address != x.Address);
             for (int i = 0; i < plottedCirclePoints.Count; i++)
@@ -238,14 +240,14 @@ namespace Aimbot.Core
             base.DrawSettingsMenu();
         }
 
-        public override void EntityAdded(EntityWrapper entityWrapper)
+        public override void EntityAdded(Entity Entity)
         {
-            _entities.Add(entityWrapper);
+            _entities.Add(Entity);
         }
 
-        public override void EntityRemoved(EntityWrapper entityWrapper)
+        public override void EntityRemoved(Entity Entity)
         {
-            _entities.Remove(entityWrapper);
+            _entities.Remove(Entity);
         }
 
         public HashSet<string> LoadFile(string fileName)
@@ -285,15 +287,16 @@ namespace Aimbot.Core
         }
 
 
-        public int TryGetStat(string playerStat)
-        {
-            return !GameController.EntityListWrapper.PlayerStats.TryGetValue(
-                GameController.Files.Stats.records[playerStat].ID, out var statValue)
-                ? 0
-                : statValue;
-        }
+        // TODO: useless
+        //public int TryGetStat(string playerStat)
+        //{
+        //    return !GameController.EntityListWrapper.PlayerStats.TryGetValue(
+        //        GameController.Files.Stats.records[playerStat].ID, out var statValue)
+        //        ? 0
+        //        : statValue;
+        //}
 
-        public int TryGetStat(string playerStat, EntityWrapper entity)
+        public int TryGetStat(string playerStat, Entity entity)
         {
             return !entity.GetComponent<Stats>().StatDictionary
                 .TryGetValue(GameController.Files.Stats.records[playerStat].ID, out var statValue)
@@ -303,17 +306,17 @@ namespace Aimbot.Core
 
         private void PlayerAim()
         {
-            List<Tuple<float, EntityWrapper>> AlivePlayers = _entities
+            List<Tuple<float, Entity>> AlivePlayers = _entities
                 .Where(x => x.HasComponent<Player>()
                             && x.IsAlive
                             && x.Address != AimBot.Utilities.Player.entity_.Address
                             && TryGetStat("ignored_by_enemy_target_selection", x) == 0
                             && TryGetStat("cannot_die", x) == 0
                             && TryGetStat("cannot_be_damaged", x) == 0)
-                .Select(x => new Tuple<float, EntityWrapper>(Misc.EntityDistance(x), x))
+                .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x), x))
                 .OrderBy(x => x.Item1)
                 .ToList();
-            Tuple<float, EntityWrapper> closestMonster = AlivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
+            Tuple<float, Entity> closestMonster = AlivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
             if (closestMonster != null)
             {
                 if (!_mouseWasHeldDown)
@@ -351,7 +354,7 @@ namespace Aimbot.Core
             }
         }
 
-        public bool HasAnyBuff(EntityWrapper entity, string[] buffList, bool contains = false)
+        public bool HasAnyBuff(Entity entity, string[] buffList, bool contains = false)
         {
             if (!entity.HasComponent<Life>()) return false;
             foreach (Buff buff in entity.GetComponent<Life>().Buffs)
@@ -395,7 +398,7 @@ namespace Aimbot.Core
 
         private void MonsterAim()
         {
-            List<Tuple<float, EntityWrapper>> aliveAndHostile = _entities?.Where(x => x.HasComponent<Monster>()
+            List<Tuple<float, Entity>> aliveAndHostile = _entities?.Where(x => x.HasComponent<Monster>()
                                                                                       && x.IsAlive
                                                                                       && x.IsHostile
                                                                                       && !IsIgnoredMonster(x.Path)
@@ -411,12 +414,12 @@ namespace Aimbot.Core
                                                                                           "capture_monster_captured",
                                                                                           "capture_monster_disappearing"
                                                                                       }))
-                .Select(x => new Tuple<float, EntityWrapper>(AimWeightEB(x), x))
+                .Select(x => new Tuple<float, Entity>(AimWeightEB(x), x))
                 .OrderByDescending(x => x.Item1)
                 .ToList();
             if (aliveAndHostile?.FirstOrDefault(x => x.Item1 < Settings.AimRange) != null)
             {
-                Tuple<float, EntityWrapper> HeightestWeightedTarget =
+                Tuple<float, Entity> HeightestWeightedTarget =
                     aliveAndHostile.FirstOrDefault(x => x.Item1 < Settings.AimRange);
                 if (!_mouseWasHeldDown)
                 {
@@ -453,9 +456,9 @@ namespace Aimbot.Core
             }
         }
 
-        public float AimWeightEB(EntityWrapper entity)
+        public float AimWeightEB(Entity entity)
         {
-            EntityWrapper m = entity;
+            Entity m = entity;
             int weight = 0;
             weight -= Misc.EntityDistance(m) / 10;
             MonsterRarity rarity = m.GetComponent<ObjectMagicProperties>().Rarity;
