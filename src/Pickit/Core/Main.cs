@@ -299,7 +299,7 @@ namespace Aimbot.Core
         public int TryGetStat(string playerStat, Entity entity)
         {
             return !entity.GetComponent<Stats>().StatDictionary
-                .TryGetValue(GameController.Files.Stats.records[playerStat].ID, out var statValue)
+                .TryGetValue((GameStat) GameController.Files.Stats.records[playerStat].ID, out var statValue) // TODO: test typecast (GameStat)
                 ? 0
                 : statValue;
         }
