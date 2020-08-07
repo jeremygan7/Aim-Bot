@@ -1,6 +1,5 @@
-﻿using PoeHUD.Models;
-using PoeHUD.Plugins;
-using PoeHUD.Poe.Components;
+﻿using ExileCore;
+using ExileCore.PoEMemory.Components;
 
 namespace AimBot.Utilities
 {

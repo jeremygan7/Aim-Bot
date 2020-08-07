@@ -1,14 +1,4 @@
-﻿#region Header
-
-//-----------------------------------------------------------------
-//   Class:          VirtualKeyboard
-//   Description:    Keyboard control utils.
-//   Author:         Stridemann, nymann        Date: 08.26.2017
-//-----------------------------------------------------------------
-
-#endregion
-
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 

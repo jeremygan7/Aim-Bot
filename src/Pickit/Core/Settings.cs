@@ -1,7 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Configuration;
+using ExileCore.Shared.Nodes;
 using System.Windows.Forms;
-using PoeHUD.Hud.Settings;
-using PoeHUD.Plugins;
 
 namespace Aimbot.Core
 {
@@ -10,10 +9,10 @@ namespace Aimbot.Core
         public HotkeyNode AimKey { get; set; } = Keys.A;
         public RangeNode<int> AimRange { get; set; } = new RangeNode<int>(600, 1, 1000);
         public RangeNode<int> AimLoopDelay { get; set; } = new RangeNode<int>(124, 1, 200);
-        public ToggleNode RMousePos { get; set; } = false;
-        public ToggleNode AimPlayers { get; set; } = true;
-        public ToggleNode DebugMonsterWeight { get; set; } = false;
-        public ToggleNode ShowAimRange { get; set; } = false;
+        public ToggleNode RMousePos { get; set; }
+        public ToggleNode AimPlayers { get; set; }
+        public ToggleNode DebugMonsterWeight { get; set; }
+        public ToggleNode ShowAimRange { get; set; }
         public RangeNode<int> UniqueRarityWeight { get; set; } = new RangeNode<int>(20, -200, 200);
         public RangeNode<int> RareRarityWeight { get; set; } = new RangeNode<int>(15, -200, 200);
         public RangeNode<int> MagicRarityWeight { get; set; } = new RangeNode<int>(10, -200, 200);

@@ -1,14 +1,4 @@
-﻿#region Header
-
-//-----------------------------------------------------------------
-//   Class:          MouseUtils
-//   Description:    Mouse control utils.
-//   Author:         Stridemann, nymann        Date: 08.26.2017
-//-----------------------------------------------------------------
-
-#endregion
-
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using SharpDX;

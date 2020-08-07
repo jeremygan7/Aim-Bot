@@ -1,12 +1,3 @@
-#region Header
-
-/*
- * Idea/Code from Qvin's auto pickup
- * Reworked into a monster aimer
-*/
-
-#endregion
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,17 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using AimBot.Utilities;
+using ExileCore;
+using ExileCore.PoEMemory.Components;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Enums;
 using ImGuiNET;
-using PoeHUD.Framework.Helpers;
-using PoeHUD.Models;
-using PoeHUD.Models.Enums;
-using PoeHUD.Plugins;
-using PoeHUD.Poe;
-using PoeHUD.Poe.Components;
-using PoeHUD.Poe.RemoteMemoryObjects;
 using SharpDX;
-using SharpDX.Direct3D9;
-using static PoeHUD.Hud.UI.ImGuiExtension;
 using Player = PoeHUD.Poe.Components.Player;
 
 namespace Aimbot.Core

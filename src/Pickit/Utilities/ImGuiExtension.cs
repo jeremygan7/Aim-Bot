@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using ExileCore.Shared;
+using ExileCore.Shared.Nodes;
 using ImGuiNET;
-using PoeHUD.Framework;
-using PoeHUD.Hud.Settings;
-using PoeHUD.Plugins;
 using SharpDX;
 using ImGuiVector2 = System.Numerics.Vector2;
 using ImGuiVector4 = System.Numerics.Vector4;

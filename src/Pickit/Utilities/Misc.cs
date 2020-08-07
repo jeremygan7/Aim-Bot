@@ -1,7 +1,5 @@
 ﻿using System;
-using PoeHUD.Models;
-using PoeHUD.Poe;
-using PoeHUD.Poe.Components;
+using ExileCore.PoEMemory.Components;
 using SharpDX;
 
 namespace AimBot.Utilities
