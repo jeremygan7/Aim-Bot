@@ -111,7 +111,8 @@ namespace Aimbot.Core
             if (!Settings.DebugMonsterWeight) return;
             foreach (Entity entity in GameController.Entities)
             {
-                if (entity.DistanceFromPlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
+                // TODO: test
+                if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
                 {
                     Camera camera = GameController.Game.IngameState.Camera;
                     Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170), entity);
