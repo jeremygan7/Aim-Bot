@@ -115,13 +115,14 @@ namespace Aimbot.Core
                 if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
                 {
                     Camera camera = GameController.Game.IngameState.Camera;
-                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170), entity);
+                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170)/*, entity*/);
                     if (chestScreenCoords == new Vector2()) continue;
                     Vector2 iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
                     float maxWidth = 0;
                     float maxheight = 0;
                     Size2 size = Graphics.DrawText(AimWeightEB(entity).ToString(), 15, iconRect, Color.White,
                         FontDrawFlags.Center);
+             
                     chestScreenCoords.Y += size.Height;
                     maxheight += size.Height;
                     maxWidth = Math.Max(maxWidth, size.Width);
@@ -153,14 +154,14 @@ namespace Aimbot.Core
             {
                 if (i >= plottedCirclePoints.Count - 1)
                 {
-                    Vector2 pointEnd1 = camera.WorldToScreen(plottedCirclePoints.Last(), rndEntity);
-                    Vector2 pointEnd2 = camera.WorldToScreen(plottedCirclePoints[0], rndEntity);
+                    Vector2 pointEnd1 = camera.WorldToScreen(plottedCirclePoints.Last()/*, rndEntity*/);
+                    Vector2 pointEnd2 = camera.WorldToScreen(plottedCirclePoints[0]/*, rndEntity*/);
                     Graphics.DrawLine(pointEnd1, pointEnd2, lineWidth, color);
                     return;
                 }
 
-                Vector2 point1 = camera.WorldToScreen(plottedCirclePoints[i], rndEntity);
-                Vector2 point2 = camera.WorldToScreen(plottedCirclePoints[i + 1], rndEntity);
+                Vector2 point1 = camera.WorldToScreen(plottedCirclePoints[i]/*, rndEntity*/);
+                Vector2 point2 = camera.WorldToScreen(plottedCirclePoints[i + 1]/*, rndEntity*/);
                 Graphics.DrawLine(point1, point2, lineWidth, color);
             }
         }
@@ -334,7 +335,7 @@ namespace Aimbot.Core
 
                 Camera camera = GameController.Game.IngameState.Camera;
                 Vector2 entityPosToScreen =
-                    camera.WorldToScreen(closestMonster.Item2.Pos.Translate(0, 0, 0), closestMonster.Item2);
+                    camera.WorldToScreen(closestMonster.Item2.Pos.Translate(0, 0, 0)/*, closestMonster.Item2*/);
                 RectangleF vectWindow = GameController.Window.GetWindowRectangle();
                 if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
                     entityPosToScreen.Y - PixelBorder < vectWindow.Top)
@@ -435,8 +436,7 @@ namespace Aimbot.Core
                 }
 
                 Camera camera = GameController.Game.IngameState.Camera;
-                Vector2 entityPosToScreen = camera.WorldToScreen(HeightestWeightedTarget.Item2.Pos.Translate(0, 0, 0),
-                    HeightestWeightedTarget.Item2);
+                Vector2 entityPosToScreen = camera.WorldToScreen(HeightestWeightedTarget.Item2.Pos.Translate(0, 0, 0)/*, HeightestWeightedTarget.Item2*/);
                 RectangleF vectWindow = GameController.Window.GetWindowRectangle();
                 if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
                     entityPosToScreen.Y - PixelBorder < vectWindow.Top)
