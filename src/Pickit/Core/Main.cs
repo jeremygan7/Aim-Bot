@@ -12,6 +12,7 @@ using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
 using ImGuiNET;
+using MoreLinq.Extensions;
 using SharpDX;
 using Player = ExileCore.PoEMemory.Components.Player;
 
@@ -254,7 +255,8 @@ namespace Aimbot.Core
 
         public HashSet<string> LoadFile(string fileName)
         {
-            string file = $@"{PluginDirectory}\{fileName}.txt";
+            //string file = $@"{PluginDirectory}\{fileName}.txt";
+            string file = $@"{fileName}.txt";
             if (!File.Exists(file))
             {
                 LogError($@"Failed to find {file}", 10);
