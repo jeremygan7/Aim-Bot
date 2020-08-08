@@ -117,13 +117,14 @@ namespace Aimbot.Core
                 if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
                 {
                     Camera camera = GameController.Game.IngameState.Camera;
-                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170)/*, entity*/);
+                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170) /*, entity*/);
                     if (chestScreenCoords == new Vector2()) continue;
                     Vector2 iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
                     float maxWidth = 0;
                     float maxheight = 0;
-                  
-                    var size = Graphics.DrawText(AimWeightEb(entity).ToString(CultureInfo.InvariantCulture), iconRect, Color.White, 15, FontAlign.Center);
+
+                    var size = Graphics.DrawText(AimWeightEb(entity).ToString(CultureInfo.InvariantCulture), iconRect,
+                        Color.White, 15, FontAlign.Center);
                     chestScreenCoords.Y += 15;
                     maxheight += 15;
                     maxWidth = Math.Max(maxWidth, 15);
@@ -385,7 +386,8 @@ namespace Aimbot.Core
             return false;
         }
 
-        private static bool HasAnyMagicAttribute(List<string> entitiesMagicMods, string[] magicList, bool contains = false)
+        private static bool HasAnyMagicAttribute(List<string> entitiesMagicMods, string[] magicList,
+            bool contains = false)
         {
             if (entitiesMagicMods.Count <= 0) return false;
             foreach (var buff in entitiesMagicMods)
@@ -464,9 +466,9 @@ namespace Aimbot.Core
 
         private float AimWeightEb(Entity entity)
         {
-            int weight = 0;
-            var _player = GameController.Player;
-            weight -= Convert.ToInt32(Misc.EntityDistance(entity, _player) / 10);
+            var weight = 0;
+            var player = GameController.Player;
+            weight -= Convert.ToInt32(Misc.EntityDistance(entity, player) / 10);
             //LogMessage($"Mob weight: {weight}", 1);
             var rarity = entity.GetComponent<ObjectMagicProperties>().Rarity;
             var monsterMagicProperties = new List<string>();
@@ -479,9 +481,11 @@ namespace Aimbot.Core
                 "AuraCannotDie"
             }, true))
                 weight += Settings.CannotDieAura;
-            if (entity.GetComponent<Life>().HasBuff("capture_monster_trapped")) weight += Settings.capture_monster_trapped;
+            if (entity.GetComponent<Life>().HasBuff("capture_monster_trapped"))
+                weight += Settings.capture_monster_trapped;
             if (entity.GetComponent<Life>().HasBuff("harbinger_minion_new")) weight += Settings.HarbingerMinionWeight;
-            if (entity.GetComponent<Life>().HasBuff("capture_monster_enraged")) weight += Settings.capture_monster_enraged;
+            if (entity.GetComponent<Life>().HasBuff("capture_monster_enraged"))
+                weight += Settings.capture_monster_enraged;
             if (entity.Path.Contains("/BeastHeart")) weight += Settings.BeastHearts;
             if (entity.Path == "Metadata/Monsters/Tukohama/TukohamaShieldTotem") weight += Settings.TukohamaShieldTotem;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
