@@ -65,11 +65,39 @@ namespace Aimbot.Core
 
             return true;
         }
+        
+        public override void EntityAdded(Entity entityWrapper) { _entities.Add(entityWrapper); }
 
+        public override void EntityRemoved(Entity entityWrapper) { _entities.Remove(entityWrapper); }
+
+        private void FindMonsters()
+        {
+            foreach (Entity entity in GameController.Entities)
+            {
+                if (GetDistanceFromPlayer(entity) < Settings.AimRange.Value && entity.HasComponent<Monster>() && entity.IsAlive)
+                {
+                    EntityAdded(entity);
+                }
+            }
+        }
+        private void RemoveMonsters()
+        {
+            foreach (var entity in _entities)
+            {
+                if (GetDistanceFromPlayer(entity) > Settings.AimRange.Value)
+                {
+                    EntityRemoved(entity);
+                }
+            }
+        }
         public override void Render()
         {
             base.Render();
             WeightDebug();
+            
+            FindMonsters();
+            RemoveMonsters();
+
             if (Settings.ShowAimRange.Value)
             {
                 var pos = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
@@ -78,8 +106,7 @@ namespace Aimbot.Core
 
             try
             {
-                if (Keyboard.IsKeyDown((int) Settings.AimKey.Value)
-                    && !GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible
+                if (/*Keyboard.IsKeyDown((int) Settings.AimKey.Value) &&*/ !GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible
                     && !GameController.Game.IngameState.IngameUi.OpenLeftPanel.IsVisible)
                 {
                     if (_aiming) return;
@@ -332,6 +359,7 @@ namespace Aimbot.Core
                 .Select(x => new Tuple<float, Entity>(AimWeightEb(x), x))
                 .OrderByDescending(x => x.Item1)
                 .ToList();
+            LogMessage($"aliveAndHostile: {aliveAndHostile.Count}", 1);
             if (aliveAndHostile?.FirstOrDefault(x => x.Item1 < Convert.ToSingle(Settings.AimRange.Value)) != null)
             {
                 var heightestWeightedTarget =
