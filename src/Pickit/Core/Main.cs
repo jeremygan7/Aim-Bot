@@ -117,14 +117,14 @@ namespace Aimbot.Core
                 if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
                 {
                     Camera camera = GameController.Game.IngameState.Camera;
-                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170) /*, entity*/);
+                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170));
                     if (chestScreenCoords == new Vector2()) continue;
                     Vector2 iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
                     float maxWidth = 0;
                     float maxheight = 0;
 
-                    var size = Graphics.DrawText(AimWeightEb(entity).ToString(CultureInfo.InvariantCulture), iconRect,
-                        Color.White, 15, FontAlign.Center);
+                    Graphics.DrawText(AimWeightEb(entity).ToString(CultureInfo.InvariantCulture), iconRect, Color.White,
+                        15, FontAlign.Center); // draw weight
                     chestScreenCoords.Y += 15;
                     maxheight += 15;
                     maxWidth = Math.Max(maxWidth, 15);
@@ -149,9 +149,9 @@ namespace Aimbot.Core
                 plottedCirclePoints.Add(new Vector3((float) x, (float) y, vector3Pos.Z));
             }
 
-            Entity rndEntity =
-                GameController.Entities.FirstOrDefault(x =>
-                    x.HasComponent<Render>() && GameController.Player.Address != x.Address);
+            //Entity rndEntity =
+            //    GameController.Entities.FirstOrDefault(x =>
+            //        x.HasComponent<Render>() && GameController.Player.Address != x.Address);
             for (var i = 0; i < plottedCirclePoints.Count; i++)
             {
                 if (i >= plottedCirclePoints.Count - 1)
@@ -312,7 +312,7 @@ namespace Aimbot.Core
 
         private void PlayerAim()
         {
-            var _player = GameController.Player;
+            var player = GameController.Player;
 
             var alivePlayers = _entities
                 .Where(x => x.HasComponent<Player>()
@@ -321,7 +321,7 @@ namespace Aimbot.Core
                             && TryGetStat("ignored_by_enemy_target_selection", x) == 0
                             && TryGetStat("cannot_die", x) == 0
                             && TryGetStat("cannot_be_damaged", x) == 0)
-                .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x, _player), x))
+                .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x, player), x))
                 .OrderBy(x => x.Item1)
                 .ToList();
             var closestMonster = alivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
@@ -426,7 +426,7 @@ namespace Aimbot.Core
                 .ToList();
             if (aliveAndHostile?.FirstOrDefault(x => x.Item1 < Settings.AimRange) != null)
             {
-                var HeightestWeightedTarget =
+                var heightestWeightedTarget =
                     aliveAndHostile.FirstOrDefault(x => x.Item1 < Settings.AimRange);
                 if (!_mouseWasHeldDown)
                 {
@@ -434,17 +434,18 @@ namespace Aimbot.Core
                     _mouseWasHeldDown = true;
                 }
 
-                if (HeightestWeightedTarget.Item1 >= Settings.AimRange)
+                if (heightestWeightedTarget != null && heightestWeightedTarget.Item1 >= Settings.AimRange)
                 {
                     _aiming = false;
                     return;
                 }
 
-                Camera camera = GameController.Game.IngameState.Camera;
-                Vector2 entityPosToScreen =
+                var camera = GameController.Game.IngameState.Camera;
+                if (heightestWeightedTarget == null) return;
+                var entityPosToScreen =
                     camera.WorldToScreen(
-                        HeightestWeightedTarget.Item2.Pos.Translate(0, 0, 0) /*, HeightestWeightedTarget.Item2*/);
-                RectangleF vectWindow = GameController.Window.GetWindowRectangle();
+                        heightestWeightedTarget.Item2.Pos.Translate(0, 0, 0));
+                var vectWindow = GameController.Window.GetWindowRectangle();
                 if (entityPosToScreen.Y + PixelBorder > vectWindow.Bottom ||
                     entityPosToScreen.Y - PixelBorder < vectWindow.Top)
                 {
@@ -518,6 +519,8 @@ namespace Aimbot.Core
                     break;
                 case MonsterRarity.White:
                     weight += Settings.NormalRarityWeight;
+                    break;
+                case MonsterRarity.Error:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
