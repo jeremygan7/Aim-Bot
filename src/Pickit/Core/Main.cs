@@ -101,16 +101,22 @@ namespace Aimbot.Core
                 LogError("Something went wrong? " + e, 5);
             }
         }
-
+        private int GetDistanceFromPlayer(Entity entity)
+        {
+            var p        = entity.Pos;
+            var player   = GameController.Player;
+            var distance = Math.Sqrt(Math.Pow(player.Pos.X - p.X, 2) + Math.Pow(player.Pos.Y - p.Y, 2));
+            return (int)distance;
+        }
         private void WeightDebug()
         {
             if (!Settings.DebugMonsterWeight.Value) return;
             foreach (var entity in GameController.Entities)
             {
-                if (Convert.ToInt32(entity.DistancePlayer) < Settings.AimRange.Value &&
+                if (GetDistanceFromPlayer(entity) < Settings.AimRange.Value &&
                     entity.HasComponent<Monster>() && entity.IsAlive)
                 {
-                    //LogMessage($"Entity DistancePlayer: {entity.DistancePlayer}", 1);
+                    //LogMessage($"Entity DistanceFromPlayer: {GetDistanceFromPlayer(entity)/10}", 1);
                     //LogMessage($"DistancePlayer: {Settings.AimRange.Value}", 1);
                     var camera = GameController.Game.IngameState.Camera;
                     var chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170));
@@ -391,7 +397,7 @@ namespace Aimbot.Core
             var player = GameController.Player;
             //weight -= Misc.EntityDistance(entity, player) / 10;
             var weight = Misc.EntityDistance(entity, player) / 10;
-            //LogMessage($"Mob weight: {weight}", 1);
+            //LogMessage($"EntityDistance: {Misc.EntityDistance(entity, player)}", 1);
             var rarity = entity.GetComponent<ObjectMagicProperties>().Rarity;
             var monsterMagicProperties = new List<string>();
             if (entity.HasComponent<ObjectMagicProperties>())
@@ -441,8 +447,8 @@ namespace Aimbot.Core
                 case MonsterRarity.White:
                     weight += Settings.NormalRarityWeight;
                     break;
-                case MonsterRarity.Error:
-                    break;
+                //case MonsterRarity.Error:
+                //    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
