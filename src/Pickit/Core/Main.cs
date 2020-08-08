@@ -12,7 +12,6 @@ using ExileCore.PoEMemory.Components;
 using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
-using ImGuiNET;
 using MoreLinq.Extensions;
 using SharpDX;
 using Player = ExileCore.PoEMemory.Components.Player;
@@ -36,8 +35,6 @@ namespace Aimbot.Core
             "Metadata/Monsters/HuhuGrub/AbyssGrubMobile",
             "Metadata/Monsters/HuhuGrub/AbyssGrubMobileMinion"
         };
-
-        private string _pluginVersion;
 
         private readonly string[] _raisedZombie =
         {
@@ -67,7 +64,6 @@ namespace Aimbot.Core
             Name = "Aim Bot";
             _pluginDirectory = DirectoryFullName;
             //Controller = this;
-            _pluginVersion = $"{_version}";
             _ignoredMonsters = LoadFile("Ignored Monsters");
 
             return true;
