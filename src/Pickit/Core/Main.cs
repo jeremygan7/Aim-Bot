@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -29,7 +30,6 @@ namespace Aimbot.Core
         private Vector2 _oldMousePos;
         private HashSet<string> _ignoredMonsters;
         private string _pluginDirectory;
-        private Entity _player;
 
         private readonly string[] _lightlessGrub =
         {
@@ -66,7 +66,6 @@ namespace Aimbot.Core
 
         public override bool Initialise()
         {
-            _player = GameController.Player;
             Name = "Aim Bot";
             _pluginDirectory = DirectoryFullName;
             //Controller = this;
@@ -113,10 +112,9 @@ namespace Aimbot.Core
         private void WeightDebug()
         {
             if (!Settings.DebugMonsterWeight) return;
-            foreach (Entity entity in GameController.Entities)
+            foreach (var entity in GameController.Entities)
             {
-                // TODO: test
-                if (/*entity.DistancePlayer < Settings.AimRange && */entity.HasComponent<Monster>() && entity.IsAlive)
+                if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
                 {
                     Camera camera = GameController.Game.IngameState.Camera;
                     Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170)/*, entity*/);
@@ -125,7 +123,7 @@ namespace Aimbot.Core
                     float maxWidth = 0;
                     float maxheight = 0;
                   
-                    var size = Graphics.DrawText(AimWeightEb(entity).ToString(), iconRect, Color.White, 15, FontAlign.Center);
+                    var size = Graphics.DrawText(AimWeightEb(entity).ToString(CultureInfo.InvariantCulture), iconRect, Color.White, 15, FontAlign.Center);
                     chestScreenCoords.Y += 15;
                     maxheight += 15;
                     maxWidth = Math.Max(maxWidth, 15);
@@ -313,6 +311,8 @@ namespace Aimbot.Core
 
         private void PlayerAim()
         {
+            var _player = GameController.Player;
+
             var alivePlayers = _entities
                 .Where(x => x.HasComponent<Player>()
                             && x.IsAlive
@@ -464,26 +464,26 @@ namespace Aimbot.Core
 
         private float AimWeightEb(Entity entity)
         {
-            var m = entity;
-            float weight = 0;
-
-            weight -= Misc.EntityDistance(m, _player) / 10;
-            var rarity = m.GetComponent<ObjectMagicProperties>().Rarity;
+            int weight = 0;
+            var _player = GameController.Player;
+            weight -= Convert.ToInt32(Misc.EntityDistance(entity, _player) / 10);
+            //LogMessage($"Mob weight: {weight}", 1);
+            var rarity = entity.GetComponent<ObjectMagicProperties>().Rarity;
             var monsterMagicProperties = new List<string>();
-            if (m.HasComponent<ObjectMagicProperties>())
-                monsterMagicProperties = m.GetComponent<ObjectMagicProperties>().Mods;
+            if (entity.HasComponent<ObjectMagicProperties>())
+                monsterMagicProperties = entity.GetComponent<ObjectMagicProperties>().Mods;
             var monsterBuffs = new List<Buff>();
-            if (m.HasComponent<Life>()) monsterBuffs = m.GetComponent<Life>().Buffs;
+            if (entity.HasComponent<Life>()) monsterBuffs = entity.GetComponent<Life>().Buffs;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
             {
                 "AuraCannotDie"
             }, true))
                 weight += Settings.CannotDieAura;
-            if (m.GetComponent<Life>().HasBuff("capture_monster_trapped")) weight += Settings.capture_monster_trapped;
-            if (m.GetComponent<Life>().HasBuff("harbinger_minion_new")) weight += Settings.HarbingerMinionWeight;
-            if (m.GetComponent<Life>().HasBuff("capture_monster_enraged")) weight += Settings.capture_monster_enraged;
-            if (m.Path.Contains("/BeastHeart")) weight += Settings.BeastHearts;
-            if (m.Path == "Metadata/Monsters/Tukohama/TukohamaShieldTotem") weight += Settings.TukohamaShieldTotem;
+            if (entity.GetComponent<Life>().HasBuff("capture_monster_trapped")) weight += Settings.capture_monster_trapped;
+            if (entity.GetComponent<Life>().HasBuff("harbinger_minion_new")) weight += Settings.HarbingerMinionWeight;
+            if (entity.GetComponent<Life>().HasBuff("capture_monster_enraged")) weight += Settings.capture_monster_enraged;
+            if (entity.Path.Contains("/BeastHeart")) weight += Settings.BeastHearts;
+            if (entity.Path == "Metadata/Monsters/Tukohama/TukohamaShieldTotem") weight += Settings.TukohamaShieldTotem;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
             {
                 "MonsterRaisesUndeadText"
@@ -519,12 +519,12 @@ namespace Aimbot.Core
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (m.HasComponent<SoundParameterBreach>()) weight += Settings.BreachMonsterWeight;
-            if (m.HasComponent<DiesAfterTime>()) weight += Settings.DiesAfterTime;
-            if (_summonedSkeleton.Any(path => m.Path == path)) weight += Settings.SummonedSkeoton;
-            if (_raisedZombie.Any(path => m.Path == path)) weight += Settings.RaisedZombie;
-            if (_lightlessGrub.Any(path => m.Path == path)) weight += Settings.LightlessGrub;
-            if (m.Path.Contains("TaniwhaTail")) weight += Settings.TaniwhaTail;
+            if (entity.HasComponent<SoundParameterBreach>()) weight += Settings.BreachMonsterWeight;
+            if (entity.HasComponent<DiesAfterTime>()) weight += Settings.DiesAfterTime;
+            if (_summonedSkeleton.Any(path => entity.Path == path)) weight += Settings.SummonedSkeoton;
+            if (_raisedZombie.Any(path => entity.Path == path)) weight += Settings.RaisedZombie;
+            if (_lightlessGrub.Any(path => entity.Path == path)) weight += Settings.LightlessGrub;
+            if (entity.Path.Contains("TaniwhaTail")) weight += Settings.TaniwhaTail;
             return weight;
         }
     }
