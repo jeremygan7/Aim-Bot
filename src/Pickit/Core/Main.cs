@@ -114,23 +114,25 @@ namespace Aimbot.Core
             if (!Settings.DebugMonsterWeight) return;
             foreach (var entity in GameController.Entities)
             {
-                if (Convert.ToInt32(entity.DistancePlayer) < Settings.AimRange.Value && entity.HasComponent<Monster>() && entity.IsAlive)
+                if (Convert.ToInt32(entity.DistancePlayer) < Settings.AimRange.Value &&
+                    entity.HasComponent<Monster>() && entity.IsAlive)
                 {
                     //LogMessage($"Entity DistancePlayer: {entity.DistancePlayer}", 1);
-                   //LogMessage($"DistancePlayer: {Settings.AimRange.Value}", 1);
-                    Camera camera = GameController.Game.IngameState.Camera;
-                    Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170));
+                    //LogMessage($"DistancePlayer: {Settings.AimRange.Value}", 1);
+                    var camera = GameController.Game.IngameState.Camera;
+                    var chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170));
                     if (chestScreenCoords == new Vector2()) continue;
-                    Vector2 iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
+                    var iconRect = new Vector2(chestScreenCoords.X, chestScreenCoords.Y);
                     float maxWidth = 0;
                     float maxheight = 0;
 
+                    // draw weight
                     Graphics.DrawText(AimWeightEb(entity).ToString(CultureInfo.InvariantCulture), iconRect, Color.White,
-                        15, FontAlign.Center); // draw weight
+                        15, FontAlign.Center);
                     chestScreenCoords.Y += 15;
                     maxheight += 15;
                     maxWidth = Math.Max(maxWidth, 15);
-                    RectangleF background = new RectangleF(chestScreenCoords.X - maxWidth / 2 - 3,
+                    var background = new RectangleF(chestScreenCoords.X - maxWidth / 2 - 3,
                         chestScreenCoords.Y - maxheight, maxWidth + 6,
                         maxheight);
                     Graphics.DrawBox(background, Color.Black);
