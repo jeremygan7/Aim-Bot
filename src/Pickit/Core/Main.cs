@@ -89,7 +89,7 @@ namespace Aimbot.Core
                 }
                 else
                 {
-                   // LogMessage($"AimBot: disabled. InventoryPanel,OpenLeftPanel visible", 1);
+                    // LogMessage($"AimBot: disabled. InventoryPanel,OpenLeftPanel visible", 1);
 
                     if (!_mouseWasHeldDown) return;
                     _mouseWasHeldDown = false;
@@ -101,13 +101,15 @@ namespace Aimbot.Core
                 LogError("Something went wrong? " + e, 5);
             }
         }
+
         private int GetDistanceFromPlayer(Entity entity)
         {
-            var p        = entity.Pos;
-            var player   = GameController.Player;
+            var p = entity.Pos;
+            var player = GameController.Player;
             var distance = Math.Sqrt(Math.Pow(player.Pos.X - p.X, 2) + Math.Pow(player.Pos.Y - p.Y, 2));
-            return (int)distance;
+            return (int) distance;
         }
+
         private void WeightDebug()
         {
             if (!Settings.DebugMonsterWeight.Value) return;
@@ -361,7 +363,8 @@ namespace Aimbot.Core
                     _mouseWasHeldDown = true;
                 }
 
-                if (heightestWeightedTarget != null && heightestWeightedTarget.Item1 >= Convert.ToSingle(Settings.AimRange.Value))
+                if (heightestWeightedTarget != null &&
+                    heightestWeightedTarget.Item1 >= Convert.ToSingle(Settings.AimRange.Value))
                 {
                     _aiming = false;
                     return;
