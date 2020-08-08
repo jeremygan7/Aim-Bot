@@ -154,38 +154,25 @@ namespace Aimbot.Core
                 plottedCirclePoints.Add(new Vector3((float) x, (float) y, vector3Pos.Z));
             }
 
-            //Entity rndEntity =
-            //    GameController.Entities.FirstOrDefault(x =>
-            //        x.HasComponent<Render>() && GameController.Player.Address != x.Address);
             for (var i = 0; i < plottedCirclePoints.Count; i++)
             {
                 if (i >= plottedCirclePoints.Count - 1)
                 {
-                    Vector2 pointEnd1 = camera.WorldToScreen(plottedCirclePoints.Last() /*, rndEntity*/);
-                    Vector2 pointEnd2 = camera.WorldToScreen(plottedCirclePoints[0] /*, rndEntity*/);
+                    var pointEnd1 = camera.WorldToScreen(plottedCirclePoints.Last());
+                    var pointEnd2 = camera.WorldToScreen(plottedCirclePoints[0]);
                     Graphics.DrawLine(pointEnd1, pointEnd2, lineWidth, color);
                     return;
                 }
 
-                Vector2 point1 = camera.WorldToScreen(plottedCirclePoints[i] /*, rndEntity*/);
-                Vector2 point2 = camera.WorldToScreen(plottedCirclePoints[i + 1] /*, rndEntity*/);
+                var point1 = camera.WorldToScreen(plottedCirclePoints[i]);
+                var point2 = camera.WorldToScreen(plottedCirclePoints[i + 1]);
                 Graphics.DrawLine(point1, point2, lineWidth, color);
             }
         }
 
-        public override void EntityAdded(Entity entity)
-        {
-            _entities.Add(entity);
-        }
-
-        public override void EntityRemoved(Entity entity)
-        {
-            _entities.Remove(entity);
-        }
-
         private HashSet<string> LoadFile(string fileName)
         {
-            string file = $@"{_pluginDirectory}\{fileName}.txt";
+            var file = $@"{_pluginDirectory}\{fileName}.txt";
             //string file = $@"{fileName}.txt";
             if (!File.Exists(file))
             {
@@ -193,8 +180,8 @@ namespace Aimbot.Core
                 return null;
             }
 
-            HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            string[] lines = File.ReadAllLines(file);
+            var hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var lines = File.ReadAllLines(file);
             lines.Where(x => !string.IsNullOrWhiteSpace(x) && !x.StartsWith("#")).ForEach(x => hashSet.Add(x.Trim()));
             return hashSet;
         }
@@ -220,16 +207,6 @@ namespace Aimbot.Core
             _aiming = false;
         }
 
-
-        // TODO: useless
-        //public int TryGetStat(string playerStat)
-        //{
-        //    return !GameController.EntityListWrapper.PlayerStats.TryGetValue(
-        //        GameController.Files.Stats.records[playerStat].ID, out var statValue)
-        //        ? 0
-        //        : statValue;
-        //}
-
         private int TryGetStat(string playerStat, Entity entity)
         {
             return !entity.GetComponent<Stats>().StatDictionary
@@ -253,8 +230,10 @@ namespace Aimbot.Core
                 .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x, player), x))
                 .OrderBy(x => x.Item1)
                 .ToList();
+
             var closestMonster = alivePlayers.FirstOrDefault(x => x.Item1 < Convert.ToSingle(Settings.AimRange.Value));
             if (closestMonster == null) return;
+
             if (!_mouseWasHeldDown)
             {
                 _oldMousePos = Mouse.GetCursorPositionVector();
@@ -292,7 +271,7 @@ namespace Aimbot.Core
         private static bool HasAnyBuff(Entity entity, string[] buffList, bool contains = false)
         {
             if (!entity.HasComponent<Life>()) return false;
-            foreach (Buff buff in entity.GetComponent<Life>().Buffs)
+            foreach (var buff in entity.GetComponent<Life>().Buffs)
             {
                 if (buffList.Any(
                     searchedBuff => contains ? buff.Name.Contains(searchedBuff) : searchedBuff == buff.Name))
@@ -305,7 +284,7 @@ namespace Aimbot.Core
         private static bool HasAnyBuff(List<Buff> entityBuffs, string[] buffList, bool contains = false)
         {
             if (entityBuffs.Count <= 0) return false;
-            foreach (Buff buff in entityBuffs)
+            foreach (var buff in entityBuffs)
             {
                 if (buffList.Any(
                     searchedBuff => contains ? buff.Name.Contains(searchedBuff) : searchedBuff == buff.Name))
@@ -450,13 +429,11 @@ namespace Aimbot.Core
                 case MonsterRarity.White:
                     weight += Settings.NormalRarityWeight;
                     break;
-                //case MonsterRarity.Error:
-                //    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (entity.HasComponent<SoundParameterBreach>()) weight += Settings.BreachMonsterWeight;
+            //if (entity.HasComponent<SoundParameterBreach>()) weight += Settings.BreachMonsterWeight;
             if (entity.HasComponent<DiesAfterTime>()) weight += Settings.DiesAfterTime;
             if (_summonedSkeleton.Any(path => entity.Path == path)) weight += Settings.SummonedSkeoton;
             if (_raisedZombie.Any(path => entity.Path == path)) weight += Settings.RaisedZombie;
@@ -467,7 +444,7 @@ namespace Aimbot.Core
         }
     }
 
-    public class SoundParameterBreach : Component
-    {
-    }
+    //public class SoundParameterBreach : Component
+    //{
+    //}
 }
