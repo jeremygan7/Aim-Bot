@@ -10,7 +10,7 @@ namespace Aimbot.Core
         public HotkeyNode AimKey { get; set; } = Keys.A;
         public RangeNode<int> AimRange { get; set; } = new RangeNode<int>(600, 1, 1000);
         public RangeNode<int> AimLoopDelay { get; set; } = new RangeNode<int>(124, 1, 200);
-        public ToggleNode RMousePos { get; set; } = new ToggleNode(false);
+        public ToggleNode ResetMousePosition { get; set; } = new ToggleNode(false);
         public ToggleNode AimPlayers { get; set; } = new ToggleNode(false);
         public ToggleNode DebugMonsterWeight { get; set; } = new ToggleNode(false);
         public ToggleNode ShowAimRange { get; set; } = new ToggleNode(false);

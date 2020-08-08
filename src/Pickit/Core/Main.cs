@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using AimBot.Utilities;
 using ExileCore;
 using ExileCore.PoEMemory;
@@ -55,8 +54,6 @@ namespace Aimbot.Core
             "Metadata/Monsters/RaisedSkeletons/TalismanRaisedSkeletonStandard"
         };
 
-        private readonly Version _version = Assembly.GetExecutingAssembly().GetName().Version;
-
         //public static Main Controller { get; set; }
 
         public override bool Initialise()
@@ -93,7 +90,7 @@ namespace Aimbot.Core
                 {
                     if (!_mouseWasHeldDown) return;
                     _mouseWasHeldDown = false;
-                    if (Settings.RMousePos) Mouse.SetCursorPos(_oldMousePos);
+                    if (Settings.ResetMousePosition) Mouse.SetCursorPos(_oldMousePos);
                 }
             }
             catch (Exception e)
