@@ -70,9 +70,9 @@ namespace Aimbot.Core
         {
             base.Render();
             WeightDebug();
-            if (Settings.ShowAimRange)
+            if (Settings.ShowAimRange.Value)
             {
-                Vector3 pos = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
+                var pos = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
                 DrawEllipseToWorld(pos, Settings.AimRange.Value, 25, 2, Color.LawnGreen);
             }
 
@@ -84,13 +84,16 @@ namespace Aimbot.Core
                 {
                     if (_aiming) return;
                     _aiming = true;
+                    LogMessage($"AimBot: enabled", 1);
                     Aimbot();
                 }
                 else
                 {
+                   // LogMessage($"AimBot: disabled. InventoryPanel,OpenLeftPanel visible", 1);
+
                     if (!_mouseWasHeldDown) return;
                     _mouseWasHeldDown = false;
-                    if (Settings.ResetMousePosition) Mouse.SetCursorPos(_oldMousePos);
+                    if (Settings.ResetMousePosition.Value) Mouse.SetCursorPos(_oldMousePos);
                 }
             }
             catch (Exception e)
@@ -101,7 +104,7 @@ namespace Aimbot.Core
 
         private void WeightDebug()
         {
-            if (!Settings.DebugMonsterWeight) return;
+            if (!Settings.DebugMonsterWeight.Value) return;
             foreach (var entity in GameController.Entities)
             {
                 if (Convert.ToInt32(entity.DistancePlayer) < Settings.AimRange.Value &&
@@ -195,13 +198,13 @@ namespace Aimbot.Core
 
         private void Aimbot()
         {
-            if (_aimTimer.ElapsedMilliseconds < Settings.AimLoopDelay)
+            if (Convert.ToInt32(_aimTimer.ElapsedMilliseconds) < Settings.AimLoopDelay.Value)
             {
                 _aiming = false;
                 return;
             }
 
-            if (Settings.AimPlayers)
+            if (Settings.AimPlayers.Value)
                 PlayerAim();
             else
                 MonsterAim();
@@ -242,7 +245,7 @@ namespace Aimbot.Core
                 .Select(x => new Tuple<float, Entity>(Misc.EntityDistance(x, player), x))
                 .OrderBy(x => x.Item1)
                 .ToList();
-            var closestMonster = alivePlayers.FirstOrDefault(x => x.Item1 < Settings.AimRange);
+            var closestMonster = alivePlayers.FirstOrDefault(x => x.Item1 < Convert.ToSingle(Settings.AimRange.Value));
             if (closestMonster == null) return;
             if (!_mouseWasHeldDown)
             {
@@ -250,7 +253,7 @@ namespace Aimbot.Core
                 _mouseWasHeldDown = true;
             }
 
-            if (closestMonster.Item1 >= Settings.AimRange)
+            if (closestMonster.Item1 >= Convert.ToSingle(Settings.AimRange.Value))
             {
                 _aiming = false;
                 return;
@@ -342,17 +345,17 @@ namespace Aimbot.Core
                 .Select(x => new Tuple<float, Entity>(AimWeightEb(x), x))
                 .OrderByDescending(x => x.Item1)
                 .ToList();
-            if (aliveAndHostile?.FirstOrDefault(x => x.Item1 < Settings.AimRange) != null)
+            if (aliveAndHostile?.FirstOrDefault(x => x.Item1 < Convert.ToSingle(Settings.AimRange.Value)) != null)
             {
                 var heightestWeightedTarget =
-                    aliveAndHostile.FirstOrDefault(x => x.Item1 < Settings.AimRange);
+                    aliveAndHostile.FirstOrDefault(x => x.Item1 < Convert.ToSingle(Settings.AimRange.Value));
                 if (!_mouseWasHeldDown)
                 {
                     _oldMousePos = Mouse.GetCursorPositionVector();
                     _mouseWasHeldDown = true;
                 }
 
-                if (heightestWeightedTarget != null && heightestWeightedTarget.Item1 >= Settings.AimRange)
+                if (heightestWeightedTarget != null && heightestWeightedTarget.Item1 >= Convert.ToSingle(Settings.AimRange.Value))
                 {
                     _aiming = false;
                     return;
