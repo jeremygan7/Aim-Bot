@@ -114,8 +114,10 @@ namespace Aimbot.Core
             if (!Settings.DebugMonsterWeight) return;
             foreach (var entity in GameController.Entities)
             {
-                if (entity.DistancePlayer < Settings.AimRange && entity.HasComponent<Monster>() && entity.IsAlive)
+                if (Convert.ToInt32(entity.DistancePlayer) < Settings.AimRange.Value && entity.HasComponent<Monster>() && entity.IsAlive)
                 {
+                    //LogMessage($"Entity DistancePlayer: {entity.DistancePlayer}", 1);
+                   //LogMessage($"DistancePlayer: {Settings.AimRange.Value}", 1);
                     Camera camera = GameController.Game.IngameState.Camera;
                     Vector2 chestScreenCoords = camera.WorldToScreen(entity.Pos.Translate(0, 0, -170));
                     if (chestScreenCoords == new Vector2()) continue;
@@ -360,7 +362,7 @@ namespace Aimbot.Core
             Mouse.SetCursorPos(entityPosToScreen + _clickWindowOffset);
         }
 
-        private bool HasAnyBuff(Entity entity, string[] buffList, bool contains = false)
+        private static bool HasAnyBuff(Entity entity, string[] buffList, bool contains = false)
         {
             if (!entity.HasComponent<Life>()) return false;
             foreach (Buff buff in entity.GetComponent<Life>().Buffs)
@@ -373,7 +375,7 @@ namespace Aimbot.Core
             return false;
         }
 
-        public bool HasAnyBuff(List<Buff> entityBuffs, string[] buffList, bool contains = false)
+        private static bool HasAnyBuff(List<Buff> entityBuffs, string[] buffList, bool contains = false)
         {
             if (entityBuffs.Count <= 0) return false;
             foreach (Buff buff in entityBuffs)
@@ -532,6 +534,7 @@ namespace Aimbot.Core
             if (_raisedZombie.Any(path => entity.Path == path)) weight += Settings.RaisedZombie;
             if (_lightlessGrub.Any(path => entity.Path == path)) weight += Settings.LightlessGrub;
             if (entity.Path.Contains("TaniwhaTail")) weight += Settings.TaniwhaTail;
+
             return weight;
         }
     }
