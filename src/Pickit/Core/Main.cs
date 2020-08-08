@@ -206,11 +206,11 @@ namespace Aimbot.Core
                 ImGuiExtension.IntDrag("Cannot Die Aura", Settings.CannotDieAura.Value > 0 ? "+%.00f" : "%.00f",
                     Settings.CannotDieAura);
             ImGui.SetTooltip("Monster that holds the Cannot Die Arua");
-            Settings.capture_monster_trapped.Value = ImGuiExtension.IntDrag("Monster In Net",
-                Settings.capture_monster_trapped.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_trapped);
+            Settings.CaptureMonsterTrapped.Value = ImGuiExtension.IntDrag("Monster In Net",
+                Settings.CaptureMonsterTrapped.Value > 0 ? "+%.00f" : "%.00f", Settings.CaptureMonsterTrapped);
             ImGui.SetTooltip("Monster is currently in a net");
-            Settings.capture_monster_enraged.Value = ImGuiExtension.IntDrag("Monster Broken Free From Net",
-                Settings.capture_monster_enraged.Value > 0 ? "+%.00f" : "%.00f", Settings.capture_monster_enraged);
+            Settings.CaptureMonsterEnraged.Value = ImGuiExtension.IntDrag("Monster Broken Free From Net",
+                Settings.CaptureMonsterEnraged.Value > 0 ? "+%.00f" : "%.00f", Settings.CaptureMonsterEnraged);
             ImGui.SetTooltip("Monster has recently broken free from the net");
             Settings.BeastHearts.Value =
                 ImGuiExtension.IntDrag("Malachai Hearts", Settings.BeastHearts.Value > 0 ? "+%.00f" : "%.00f",
@@ -487,10 +487,10 @@ namespace Aimbot.Core
             }, true))
                 weight += Settings.CannotDieAura;
             if (entity.GetComponent<Life>().HasBuff("capture_monster_trapped"))
-                weight += Settings.capture_monster_trapped;
+                weight += Settings.CaptureMonsterTrapped;
             if (entity.GetComponent<Life>().HasBuff("harbinger_minion_new")) weight += Settings.HarbingerMinionWeight;
             if (entity.GetComponent<Life>().HasBuff("capture_monster_enraged"))
-                weight += Settings.capture_monster_enraged;
+                weight += Settings.CaptureMonsterEnraged;
             if (entity.Path.Contains("/BeastHeart")) weight += Settings.BeastHearts;
             if (entity.Path == "Metadata/Monsters/Tukohama/TukohamaShieldTotem") weight += Settings.TukohamaShieldTotem;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
