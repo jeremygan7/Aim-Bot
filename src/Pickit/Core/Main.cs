@@ -58,18 +58,15 @@ namespace Aimbot.Core
             "Metadata/Monsters/RaisedSkeletons/TalismanRaisedSkeletonStandard"
         };
 
-        //https://stackoverflow.com/questions/826777/how-to-have-an-auto-incrementing-version-number-visual-studio
         private readonly Version _version = Assembly.GetExecutingAssembly().GetName().Version;
 
         //public static Main Controller { get; set; }
-        private DateTime _buildDate;
 
         public override bool Initialise()
         {
             Name = "Aim Bot";
             _pluginDirectory = DirectoryFullName;
             //Controller = this;
-            _buildDate = new DateTime(2000, 1, 1).AddDays(_version.Build).AddSeconds(_version.Revision * 2);
             _pluginVersion = $"{_version}";
             _ignoredMonsters = LoadFile("Ignored Monsters");
 
