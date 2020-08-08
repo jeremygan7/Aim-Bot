@@ -469,9 +469,9 @@ namespace Aimbot.Core
 
         private float AimWeightEb(Entity entity)
         {
-            var weight = 0;
             var player = GameController.Player;
-            weight -= Convert.ToInt32(Misc.EntityDistance(entity, player) / 10);
+            //weight -= Misc.EntityDistance(entity, player) / 10;
+            var weight = Misc.EntityDistance(entity, player) / 10;
             //LogMessage($"Mob weight: {weight}", 1);
             var rarity = entity.GetComponent<ObjectMagicProperties>().Rarity;
             var monsterMagicProperties = new List<string>();
