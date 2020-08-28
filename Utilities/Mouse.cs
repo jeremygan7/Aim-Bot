@@ -21,7 +21,7 @@ namespace AimBot.Utilities
         public static extern bool SetCursorPos(int x, int y);
 
         [DllImport("user32.dll")]
-        private static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
+        private static extern void Mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
 
 
         /// <summary>
@@ -54,13 +54,13 @@ namespace AimBot.Utilities
             return lpPoint;
         }
 
-        public static void LeftMouseDown() { mouse_event(MouseeventfLeftdown, 0, 0, 0, 0); }
+        public static void LeftMouseDown() { Mouse_event(MouseeventfLeftdown, 0, 0, 0, 0); }
 
-        public static void LeftMouseUp() { mouse_event(MouseeventfLeftup, 0, 0, 0, 0); }
+        public static void LeftMouseUp() { Mouse_event(MouseeventfLeftup, 0, 0, 0, 0); }
 
-        public static void RightMouseDown() { mouse_event(MouseeventfRightdown, 0, 0, 0, 0); }
+        public static void RightMouseDown() { Mouse_event(MouseeventfRightdown, 0, 0, 0, 0); }
 
-        public static void RightMouseUp() { mouse_event(MouseeventfRightup, 0, 0, 0, 0); }
+        public static void RightMouseUp() { Mouse_event(MouseeventfRightup, 0, 0, 0, 0); }
 
         public static void SetCursorPosAndLeftClick(Vector2 coords, int extraDelay)
         {
@@ -68,17 +68,17 @@ namespace AimBot.Utilities
             var posY = (int) coords.Y;
             SetCursorPos(posX, posY);
             Thread.Sleep(MouseMovementDelay + extraDelay);
-            mouse_event(MouseeventfLeftdown, 0, 0, 0, 0);
+            Mouse_event(MouseeventfLeftdown, 0, 0, 0, 0);
             Thread.Sleep(MouseClickDelay);
-            mouse_event(MouseeventfLeftup, 0, 0, 0, 0);
+            Mouse_event(MouseeventfLeftup, 0, 0, 0, 0);
         }
 
         public static void VerticalScroll(bool forward, int clicks)
         {
             if (forward)
-                mouse_event(MouseEventWheel, 0, 0, clicks * 120, 0);
+                Mouse_event(MouseEventWheel, 0, 0, clicks * 120, 0);
             else
-                mouse_event(MouseEventWheel, 0, 0, -(clicks * 120), 0);
+                Mouse_event(MouseEventWheel, 0, 0, -(clicks * 120), 0);
         }
         ////////////////////////////////////////////////////////////
 
