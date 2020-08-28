@@ -250,7 +250,7 @@ namespace Aimbot.Core
             var alivePlayers = _entities
                 .Where(x => x.HasComponent<Player>()
                             && x.IsAlive
-                            && x.Address != AimBot.Utilities.Player.entity_.Address
+                            && x.Address != AimBot.Utilities.Player.Entity_.Address
                             && TryGetStat("ignored_by_enemy_target_selection", x) == 0
                             && TryGetStat("cannot_die", x) == 0
                             && TryGetStat("cannot_be_damaged", x) == 0)

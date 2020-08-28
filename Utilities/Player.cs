@@ -6,6 +6,6 @@ namespace AimBot.Utilities
 {
     public static class Player
     {
-        public static Entity entity_ { get; }
+        public static Entity Entity_ { get; }
     }
 }
