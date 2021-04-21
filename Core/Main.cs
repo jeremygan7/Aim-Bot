@@ -298,7 +298,7 @@ namespace Aimbot.Core
         private static bool HasAnyBuff(Entity entity, string[] buffList, bool contains = false)
         {
             if (!entity.HasComponent<Life>()) return false;
-            foreach (var buff in entity.GetComponent<Life>().Buffs)
+            foreach (var buff in entity.GetComponent<Buffs>().BuffsList)
             {
                 if (buffList.Any(
                     searchedBuff => contains ? buff.Name.Contains(searchedBuff) : searchedBuff == buff.Name))
@@ -413,16 +413,17 @@ namespace Aimbot.Core
             if (entity.HasComponent<ObjectMagicProperties>())
                 monsterMagicProperties = entity.GetComponent<ObjectMagicProperties>().Mods;
             var monsterBuffs = new List<Buff>();
-            if (entity.HasComponent<Life>()) monsterBuffs = entity.GetComponent<Life>().Buffs;
+            if (entity.HasComponent<Buffs>()) monsterBuffs = entity.GetComponent<Buffs>().BuffsList;
             if (HasAnyMagicAttribute(monsterMagicProperties, new[]
             {
                 "AuraCannotDie"
             }, true))
                 weight += Settings.CannotDieAura;
-            if (entity.GetComponent<Life>().HasBuff("capture_monster_trapped"))
+            if (entity.HasComponent<Buffs>() ? entity.GetComponent<Buffs>().HasBuff("capture_monster_trapped") : false)
                 weight += Settings.CaptureMonsterTrapped;
-            if (entity.GetComponent<Life>().HasBuff("harbinger_minion_new")) weight += Settings.HarbingerMinionWeight;
-            if (entity.GetComponent<Life>().HasBuff("capture_monster_enraged"))
+            if (entity.HasComponent<Buffs>() ? entity.GetComponent<Buffs>().HasBuff("harbinger_minion_new") : false)
+                weight += Settings.HarbingerMinionWeight;
+            if (entity.HasComponent<Buffs>() ? entity.GetComponent<Buffs>().HasBuff("capture_monster_enraged") : false)
                 weight += Settings.CaptureMonsterEnraged;
             if (entity.Path.Contains("/BeastHeart")) weight += Settings.BeastHearts;
             if (entity.Path == "Metadata/Monsters/Tukohama/TukohamaShieldTotem") weight += Settings.TukohamaShieldTotem;
